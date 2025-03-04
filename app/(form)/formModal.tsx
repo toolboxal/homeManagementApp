@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
-const index = () => {
+const formModal = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>formModal</Text>
     </View>
   )
 }
-export default index
+export default formModal
 const styles = StyleSheet.create({})

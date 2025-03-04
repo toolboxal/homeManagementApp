@@ -1,0 +1,70 @@
+import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { createInsertSchema } from 'drizzle-zod'
+import { relations } from 'drizzle-orm'
+import { z } from 'zod'
+
+export const locations = sqliteTable('locations', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  room: text('room').notNull(),
+})
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+  items: many(storeItems),
+}))
+
+export const storeItems = sqliteTable('store_items', {
+  id: int().primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  dateBought: text('date_bought').notNull(),
+  dateExpiry: text('date_expiry').notNull(),
+  cost: text('cost').notNull().default('0'),
+  consumed: int('consumed', { mode: 'boolean' }).default(false),
+  quantity: text('quantity').notNull().default('1'),
+  amount: text('amount', { enum: ['empty', 'low', 'half', 'full'] }).default(
+    'full'
+  ),
+  category: text('category', {
+    enum: ['food', 'hygiene', 'supplies', 'miscellaneous'],
+  }).default('food'),
+  direction: text('direction').notNull(),
+  spot: text('spot').notNull(),
+  locationId: int('location_id').references(() => locations.id),
+})
+
+export const storeItemsRelations = relations(storeItems, ({ one }) => ({
+  location: one(locations, {
+    fields: [storeItems.locationId],
+    references: [locations.id],
+  }),
+}))
+
+export const locationInsertSchema = createInsertSchema(locations)
+export const storeItemsInsertSchema = createInsertSchema(storeItems, {
+  name: (schema) =>
+    schema
+      .min(1, { message: 'Name cannot be blank' })
+      .max(40, { message: 'Exceeds max length' }),
+  quantity: (schema) =>
+    schema
+      .regex(/^[1-9]\d*$/, { message: 'Invalid quantity' })
+      .min(1, { message: 'Minimum 1 quantity' })
+      .default('1'),
+  cost: (schema) =>
+    schema.regex(/^(?:\d+(?:[.,]\d{0,2})?|[.,]\d{1,2})$/, {
+      message: 'Invalid cost',
+    }),
+}).pick({
+  name: true,
+  dateBought: true,
+  dateExpiry: true,
+  cost: true,
+  quantity: true,
+  amount: true,
+  category: true,
+  locationId: true,
+  spot: true,
+  direction: true,
+})
+
+export type TLocation = z.infer<typeof locationInsertSchema>
+export type TStoreItem = z.infer<typeof storeItemsInsertSchema>

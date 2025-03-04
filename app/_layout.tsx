@@ -1,39 +1,95 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { useEffect } from 'react'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
+import { SQLiteProvider } from 'expo-sqlite'
+import {
+  useFonts,
+  Bitter_100Thin,
+  Bitter_200ExtraLight,
+  Bitter_300Light,
+  Bitter_400Regular,
+  Bitter_500Medium,
+  Bitter_600SemiBold,
+  Bitter_700Bold,
+  Bitter_800ExtraBold,
+  Bitter_900Black,
+  Bitter_100Thin_Italic,
+  Bitter_200ExtraLight_Italic,
+  Bitter_300Light_Italic,
+  Bitter_400Regular_Italic,
+  Bitter_500Medium_Italic,
+  Bitter_600SemiBold_Italic,
+  Bitter_700Bold_Italic,
+  Bitter_800ExtraBold_Italic,
+  Bitter_900Black_Italic,
+} from '@expo-google-fonts/bitter'
+import {
+  Poppins_100Thin,
+  Poppins_100Thin_Italic,
+  Poppins_200ExtraLight,
+  Poppins_200ExtraLight_Italic,
+  Poppins_300Light,
+  Poppins_300Light_Italic,
+  Poppins_400Regular,
+  Poppins_400Regular_Italic,
+  Poppins_500Medium,
+  Poppins_500Medium_Italic,
+  Poppins_600SemiBold,
+  Poppins_600SemiBold_Italic,
+  Poppins_700Bold,
+  Poppins_700Bold_Italic,
+  Poppins_800ExtraBold,
+  Poppins_800ExtraBold_Italic,
+  Poppins_900Black,
+  Poppins_900Black_Italic,
+} from '@expo-google-fonts/poppins'
+import { migrate } from 'drizzle-orm/expo-sqlite/migrator'
+import db, { expoDB } from '@/db/db'
+import migrations from '@/drizzle/migrations'
+import { seedDatabase } from '@/db/seeding'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+SplashScreen.preventAutoHideAsync()
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+const queryClient = new QueryClient()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
+  const [loaded, error] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Bitter_400Regular,
+    Bitter_500Medium,
+    Bitter_600SemiBold,
+    Bitter_700Bold,
+  })
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function prepare() {
+      await migrate(db, migrations)
+      await seedDatabase()
+
+      if (loaded || error) {
+        SplashScreen.hideAsync()
+      }
     }
-  }, [loaded]);
+    prepare()
+  }, [loaded, error])
 
-  if (!loaded) {
-    return null;
+  useDrizzleStudio(expoDB)
+
+  if (!loaded && !error) {
+    return null
   }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    <SQLiteProvider databaseName="app.db">
+      <QueryClientProvider client={queryClient}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(form)" />
+        </Stack>
+      </QueryClientProvider>
+    </SQLiteProvider>
+  )
 }
