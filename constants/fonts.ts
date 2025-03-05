@@ -19,4 +19,5 @@ export const size = {
   md: 16,
   lg: 18,
   xl: 20,
+  xxl: 28,
 }

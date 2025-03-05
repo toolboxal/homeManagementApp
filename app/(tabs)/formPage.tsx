@@ -4,7 +4,7 @@ import Form from '@/components/form/Form'
 
 const formPage = () => {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView edges={['top']} style={{ flex: 1 }}>
       <Form />
     </SafeAreaView>
   )

@@ -3,15 +3,20 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { gray } from '@/constants/colors'
 
 type Props = {
-  setOpenAddNewRoomModal: React.Dispatch<React.SetStateAction<boolean>>
+  setOpenAddNewLocModal: React.Dispatch<React.SetStateAction<boolean>>
+  setLocType: React.Dispatch<
+    React.SetStateAction<'room' | 'spot' | 'direction'>
+  >
+  type: 'room' | 'spot' | 'direction'
 }
 
-const FormAddBtn = ({ setOpenAddNewRoomModal }: Props) => {
+const FormAddBtn = ({ setOpenAddNewLocModal, setLocType, type }: Props) => {
   return (
     <Pressable
       style={styles.addBtn}
       onPress={() => {
-        setOpenAddNewRoomModal(true)
+        setOpenAddNewLocModal(true)
+        setLocType(type)
       }}
     >
       <MaterialIcons name="add" size={15} color={gray[900]} />

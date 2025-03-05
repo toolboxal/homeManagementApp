@@ -24,8 +24,8 @@ import {
   TStoreItem,
 } from '@/db/schema'
 import db from '@/db/db'
-import { eq, and } from 'drizzle-orm'
-import { gray, blue } from '@/constants/colors'
+import { eq } from 'drizzle-orm'
+import { gray, blue, red } from '@/constants/colors'
 import { poppins, bitter, size } from '@/constants/fonts'
 import { add, format } from 'date-fns'
 import FormDateModal from './FormDateModal'
@@ -34,8 +34,9 @@ import { getTagOptions } from '@/db/seeding'
 import Chips from '../UI/Chips'
 import PagerView from 'react-native-pager-view'
 import { capitalize } from '@/utils/capitalize'
-import FormAddBtn from '../UI/FormAddRoomBtn'
-import AddLocModal from './AddRoomModal'
+import FormAddBtn from '../UI/FormAddLocBtn'
+import AddLocModal from './AddLocModal'
+import Entypo from '@expo/vector-icons/Entypo'
 
 const categoryArray = ['food', 'hygiene', 'supplies', 'miscellaneous'] as const
 type CategoryType = (typeof categoryArray)[number]
@@ -49,8 +50,8 @@ const Form = () => {
   const [dateBought, setDateBought] = useState(today)
   const [dateExpiry, setDateExpiry] = useState(add(today, { months: 3 }))
   const [openDateModal, setOpenDateModal] = useState(false)
-  const [openAddNewRoomModal, setOpenAddNewRoomModal] = useState(false)
-
+  const [openAddNewLocModal, setOpenAddNewLocModal] = useState(false)
+  const [locType, setLocType] = useState<'room' | 'spot' | 'direction'>('room')
   const [storeSelection, setstoreSelection] = useState({
     room: 'kitchen',
     spot: 'cabinet',
@@ -94,9 +95,13 @@ const Form = () => {
       dateExpiry: format(today, 'yyyy-MM-dd'),
     },
     mode: 'onChange',
-    reValidateMode: 'onSubmit',
+    reValidateMode: 'onChange',
   })
-  console.log(storeSelection)
+  // console.log(storeSelection)
+  // console.log(locType)
+  const onError = () => {
+    pagerRef.current?.setPage(0)
+  }
 
   const onSubmit = async (data: z.infer<typeof storeItemsInsertSchema>) => {
     console.log(data)
@@ -150,7 +155,7 @@ const Form = () => {
 
   return (
     <PagerView ref={pagerRef} initialPage={0} style={{ flex: 1 }}>
-      <View key={1}>
+      <View key={1} style={{ flex: 1, paddingTop: 50 }}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.formContainer}>
             <View style={styles.formSpine}>
@@ -288,133 +293,172 @@ const Form = () => {
               />
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                style={[styles.navigationBtn, { right: 10 }]}
-                keyboardVerticalOffset={75}
+                style={[styles.navBtnsContainer, { justifyContent: 'center' }]}
+                keyboardVerticalOffset={120}
               >
                 <Pressable
                   style={styles.nextBtn}
                   onPress={() => pagerRef.current?.setPage(1)}
                 >
-                  <Text style={styles.nextBtnTxt}>Next</Text>
+                  <Entypo name="chevron-right" size={24} color={gray[50]} />
                 </Pressable>
               </KeyboardAvoidingView>
             </View>
           </View>
         </TouchableWithoutFeedback>
       </View>
-      <View key={2} style={{ flex: 1 }}>
-        <View style={styles.formSpine}>
-          <View style={styles.locationContainer}>
-            <Text style={styles.locationQn}>
-              Where do you want to store this item?
-            </Text>
-            <Text style={styles.locationQn}>{`${capitalize(
-              storeSelection.room
-            )}, ${capitalize(storeSelection.direction)} ${capitalize(
-              storeSelection.spot
-            )}`}</Text>
-            <View style={styles.locationLabelContainer}>
-              <Text
-                style={[
-                  styles.locationQn,
-                  { fontFamily: bitter.Bold, fontSize: size.sm },
-                ]}
-              >
-                ROOM
-              </Text>
-              <FormAddBtn setOpenAddNewRoomModal={setOpenAddNewRoomModal} />
+      <View key={2} style={{ flex: 1, paddingTop: 0 }}>
+        <View
+          style={{
+            marginTop: 15,
+            paddingLeft: 22,
+            // backgroundColor: 'white',
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderColor: gray[300],
+          }}
+        >
+          <Text style={styles.locationQn}>
+            Where do you want to store this item?
+          </Text>
+          <Text
+            style={[
+              styles.locationQn,
+              {
+                fontFamily: bitter.SemiBold,
+                fontSize: size.xxl,
+                color: blue[600],
+              },
+            ]}
+          >{`${capitalize(storeSelection.room)}`}</Text>
+          <Text
+            style={[
+              styles.locationQn,
+              {
+                fontFamily: bitter.Medium,
+                fontSize: size.lg,
+                color: blue[600],
+              },
+            ]}
+          >{`${capitalize(storeSelection.direction)} ${capitalize(
+            storeSelection.spot
+          )}`}</Text>
+        </View>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.formSpine}>
+            <View style={styles.locationContainer}>
+              <View style={styles.locationLabelContainer}>
+                <Text
+                  style={[
+                    styles.locationQn,
+                    { fontFamily: bitter.Bold, fontSize: size.sm },
+                  ]}
+                >
+                  ROOM
+                </Text>
+                <FormAddBtn
+                  setOpenAddNewLocModal={setOpenAddNewLocModal}
+                  setLocType={setLocType}
+                  type="room"
+                />
+              </View>
+              <View style={styles.chipsContainer}>
+                {roomsSorted.map((room) => {
+                  return (
+                    <Chips
+                      locationObj={room}
+                      key={room.id}
+                      storeSelection={storeSelection.room}
+                      setStoreSelection={setstoreSelection}
+                      category={'room'}
+                    />
+                  )
+                })}
+              </View>
             </View>
-            <View style={styles.chipsContainer}>
-              {roomsSorted.map((room) => {
-                return (
-                  <Chips
-                    locationObj={room}
-                    key={room.id}
-                    storeSelection={storeSelection.room}
-                    setStoreSelection={setstoreSelection}
-                    category={'room'}
-                  />
-                )
-              })}
+            <View style={styles.locationContainer}>
+              <View style={styles.locationLabelContainer}>
+                <Text
+                  style={[
+                    styles.locationQn,
+                    { fontFamily: bitter.Bold, fontSize: size.sm },
+                  ]}
+                >
+                  SPOT
+                </Text>
+                <FormAddBtn
+                  setOpenAddNewLocModal={setOpenAddNewLocModal}
+                  setLocType={setLocType}
+                  type="spot"
+                />
+              </View>
+              <View style={styles.chipsContainer}>
+                {spotsSorted.map((spot) => {
+                  return (
+                    <Chips
+                      locationObj={spot}
+                      key={spot.id}
+                      storeSelection={storeSelection.spot}
+                      setStoreSelection={setstoreSelection}
+                      category={'spot'}
+                    />
+                  )
+                })}
+              </View>
+            </View>
+            <View style={styles.locationContainer}>
+              <View style={styles.locationLabelContainer}>
+                <Text
+                  style={[
+                    styles.locationQn,
+                    { fontFamily: bitter.Bold, fontSize: size.sm },
+                  ]}
+                >
+                  EXACTLY WHERE
+                </Text>
+                <FormAddBtn
+                  setOpenAddNewLocModal={setOpenAddNewLocModal}
+                  setLocType={setLocType}
+                  type="direction"
+                />
+              </View>
+              <View style={styles.chipsContainer}>
+                {directionsSorted.map((direction) => {
+                  return (
+                    <Chips
+                      locationObj={direction}
+                      key={direction.id}
+                      storeSelection={storeSelection.direction}
+                      setStoreSelection={setstoreSelection}
+                      category={'direction'}
+                    />
+                  )
+                })}
+              </View>
             </View>
           </View>
-          <View style={styles.locationContainer}>
-            <View style={styles.locationLabelContainer}>
-              <Text
-                style={[
-                  styles.locationQn,
-                  { fontFamily: bitter.Bold, fontSize: size.sm },
-                ]}
-              >
-                SPOT
-              </Text>
-              {/* <FormAddBtn
-                setOpenAddNewModal={setOpenAddNewModal}
-                setToAddLoc={setToAddLoc}
-                selectType="spot"
-              /> */}
-            </View>
-            <View style={styles.chipsContainer}>
-              {spotsSorted.map((spot) => {
-                return (
-                  <Chips
-                    locationObj={spot}
-                    key={spot.id}
-                    storeSelection={storeSelection.spot}
-                    setStoreSelection={setstoreSelection}
-                    category={'spot'}
-                  />
-                )
-              })}
-            </View>
-          </View>
-          <View style={styles.locationContainer}>
-            <View style={styles.locationLabelContainer}>
-              <Text
-                style={[
-                  styles.locationQn,
-                  { fontFamily: bitter.Bold, fontSize: size.sm },
-                ]}
-              >
-                EXACTLY WHERE
-              </Text>
-              {/* <FormAddBtn
-                setOpenAddNewModal={setOpenAddNewModal}
-                setToAddLoc={setToAddLoc}
-                selectType="direction"
-              /> */}
-            </View>
-            <View style={styles.chipsContainer}>
-              {directionsSorted.map((direction) => {
-                return (
-                  <Chips
-                    locationObj={direction}
-                    key={direction.id}
-                    storeSelection={storeSelection.direction}
-                    setStoreSelection={setstoreSelection}
-                    category={'direction'}
-                  />
-                )
-              })}
-            </View>
-          </View>
-          <AddLocModal
-            openAddNewRoomModal={openAddNewRoomModal}
-            setOpenAddNewRoomModal={setOpenAddNewRoomModal}
-          />
-          <View style={[styles.navigationBtn, { left: 10 }]}>
-            <Pressable
-              style={styles.nextBtn}
-              onPress={() => pagerRef.current?.setPage(0)}
-            >
-              <Text style={styles.nextBtnTxt}>Back</Text>
-            </Pressable>
-          </View>
-          <View style={[styles.navigationBtn, { right: 10 }]}>
-            <Pressable style={styles.nextBtn} onPress={handleSubmit(onSubmit)}>
-              <Text style={styles.nextBtnTxt}>Submit</Text>
-            </Pressable>
-          </View>
+        </ScrollView>
+        <AddLocModal
+          openAddNewLocModal={openAddNewLocModal}
+          setOpenAddNewLocModal={setOpenAddNewLocModal}
+          locType={locType}
+        />
+        <View style={styles.navBtnsContainer}>
+          <Pressable
+            style={styles.nextBtn}
+            onPress={() => pagerRef.current?.setPage(0)}
+          >
+            <Entypo name="chevron-left" size={24} color={gray[50]} />
+          </Pressable>
+
+          <Pressable
+            style={styles.nextBtn}
+            onPress={handleSubmit(onSubmit, onError)}
+          >
+            <Text style={styles.nextBtnTxt}>Save</Text>
+          </Pressable>
         </View>
       </View>
     </PagerView>
@@ -429,7 +473,7 @@ const styles = StyleSheet.create({
   formSpine: {
     width: '90%',
     margin: 'auto',
-    // backgroundColor: blue[50],
+    // backgroundColor: blue[100],
     flex: 1,
   },
   catContainer: {
@@ -452,7 +496,7 @@ const styles = StyleSheet.create({
   catBoxSelect: {
     width: '20%',
     aspectRatio: 1,
-    backgroundColor: blue[950],
+    backgroundColor: blue[400],
     borderRadius: 12,
     flex: 1,
     alignItems: 'center',
@@ -551,30 +595,35 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 5,
   },
-  navigationBtn: {
+  navBtnsContainer: {
     position: 'absolute',
-    bottom: 40,
-    flex: 1,
-    flexGrow: 0,
-    justifyContent: 'center',
+    bottom: 20,
+    flexDirection: 'row',
+    width: '100%',
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
     alignItems: 'center',
+    // backgroundColor: 'yellow',
   },
   nextBtn: {
-    paddingVertical: 7,
-    paddingHorizontal: 16,
+    flex: 1,
+    maxWidth: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderRadius: 30,
-    borderWidth: 1,
-    borderColor: gray[800],
+    backgroundColor: blue[400],
   },
   nextBtnTxt: {
     fontFamily: poppins.Regular,
     fontSize: size.lg,
-    color: gray[800],
+    color: gray[50],
   },
   errorMsg: {
     fontFamily: poppins.Regular,
     fontSize: size.xxs,
-    color: gray[800],
+    color: red[700],
     position: 'absolute',
     top: 2,
     left: 15,

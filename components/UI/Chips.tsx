@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text } from 'react-native'
-import { gray } from '@/constants/colors'
+import { blue, gray, red } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import Entypo from '@expo/vector-icons/Entypo'
 
@@ -56,19 +56,20 @@ const Chips = ({
 export default Chips
 const styles = StyleSheet.create({
   chip: {
-    padding: 7,
+    padding: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: gray[500],
+    borderColor: 'white',
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'white',
   },
   selectedChip: {
     padding: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: gray[400],
+    borderColor: gray[900],
     backgroundColor: gray[900],
     alignSelf: 'flex-start',
     flexDirection: 'row',
