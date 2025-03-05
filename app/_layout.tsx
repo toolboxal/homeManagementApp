@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Stack } from 'expo-router'
+import { Stack, Slot } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
 import { SQLiteProvider } from 'expo-sqlite'
@@ -85,10 +85,10 @@ export default function RootLayout() {
   return (
     <SQLiteProvider databaseName="app.db">
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }}>
+        {/* <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(form)" />
-        </Stack>
+        </Stack> */}
+        <Slot screenOptions={{ headerShown: false }} />
       </QueryClientProvider>
     </SQLiteProvider>
   )

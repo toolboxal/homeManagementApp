@@ -1,8 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { Redirect } from 'expo-router'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Form from '@/components/form/Form'
 
 const formPage = () => {
-  return <Redirect href={'/formModal'} />
+  return (
+    <SafeAreaView style={{ flex: 1 }}>
+      <Form />
+    </SafeAreaView>
+  )
 }
 export default formPage
 const styles = StyleSheet.create({})

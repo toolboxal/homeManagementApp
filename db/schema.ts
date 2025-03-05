@@ -5,10 +5,27 @@ import { z } from 'zod'
 
 export const locations = sqliteTable('locations', {
   id: int('id').primaryKey({ autoIncrement: true }),
-  room: text('room').notNull(),
+  room: text('room').notNull().unique(),
 })
 
 export const locationsRelations = relations(locations, ({ many }) => ({
+  items: many(storeItems),
+}))
+
+export const spots = sqliteTable('spots', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  spot: text('spot').notNull().unique(),
+})
+
+export const spotsRelations = relations(spots, ({ many }) => ({
+  items: many(storeItems),
+}))
+
+export const directions = sqliteTable('directions', {
+  id: int('id').primaryKey({ autoIncrement: true }),
+  direction: text('direction').notNull().unique(),
+})
+export const directionsRelations = relations(directions, ({ many }) => ({
   items: many(storeItems),
 }))
 
@@ -26,9 +43,18 @@ export const storeItems = sqliteTable('store_items', {
   category: text('category', {
     enum: ['food', 'hygiene', 'supplies', 'miscellaneous'],
   }).default('food'),
-  direction: text('direction').notNull(),
-  spot: text('spot').notNull(),
-  locationId: int('location_id').references(() => locations.id),
+  locationId: int('location_id').references(() => locations.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
+  spotId: int('spot_id').references(() => spots.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
+  directionId: int('direction_id').references(() => directions.id, {
+    onDelete: 'set null',
+    onUpdate: 'cascade',
+  }),
 })
 
 export const storeItemsRelations = relations(storeItems, ({ one }) => ({
@@ -36,9 +62,20 @@ export const storeItemsRelations = relations(storeItems, ({ one }) => ({
     fields: [storeItems.locationId],
     references: [locations.id],
   }),
+  spot: one(spots, {
+    fields: [storeItems.spotId],
+    references: [spots.id],
+  }),
+  direction: one(directions, {
+    fields: [storeItems.directionId],
+    references: [directions.id],
+  }),
 }))
 
 export const locationInsertSchema = createInsertSchema(locations)
+export const spotInsertSchema = createInsertSchema(spots)
+export const directionInsertSchema = createInsertSchema(directions)
+
 export const storeItemsInsertSchema = createInsertSchema(storeItems, {
   name: (schema) =>
     schema
@@ -62,9 +99,11 @@ export const storeItemsInsertSchema = createInsertSchema(storeItems, {
   amount: true,
   category: true,
   locationId: true,
-  spot: true,
-  direction: true,
+  spotId: true,
+  directionId: true,
 })
 
 export type TLocation = z.infer<typeof locationInsertSchema>
+export type TSpot = z.infer<typeof spotInsertSchema>
+export type TDirection = z.infer<typeof directionInsertSchema>
 export type TStoreItem = z.infer<typeof storeItemsInsertSchema>
