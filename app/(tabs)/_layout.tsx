@@ -6,6 +6,7 @@ const TabsLayout = () => {
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen name="index" />
       <Tabs.Screen name="formPage" />
+      <Tabs.Screen name="inventoryPage" />
     </Tabs>
   )
 }

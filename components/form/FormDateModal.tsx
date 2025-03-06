@@ -27,7 +27,7 @@ const FormDateModal = ({
 }: Props) => {
   return (
     <Modal
-      animationType="slide"
+      animationType="none"
       transparent={true}
       visible={openDateModal}
       onRequestClose={() => setOpenDateModal(false)}

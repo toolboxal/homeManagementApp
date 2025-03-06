@@ -85,10 +85,9 @@ export default function RootLayout() {
   return (
     <SQLiteProvider databaseName="app.db">
       <QueryClientProvider client={queryClient}>
-        {/* <Stack screenOptions={{ headerShown: false }}>
+        <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
           <Stack.Screen name="(tabs)" />
-        </Stack> */}
-        <Slot screenOptions={{ headerShown: false }} />
+        </Stack>
       </QueryClientProvider>
     </SQLiteProvider>
   )

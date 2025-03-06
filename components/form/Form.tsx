@@ -154,7 +154,11 @@ const Form = () => {
   }
 
   return (
-    <PagerView ref={pagerRef} initialPage={0} style={{ flex: 1 }}>
+    <PagerView
+      ref={pagerRef}
+      initialPage={0}
+      style={{ flex: 1, backgroundColor: gray[50] }}
+    >
       <View key={1} style={{ flex: 1, paddingTop: 50 }}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.formContainer}>
@@ -312,7 +316,6 @@ const Form = () => {
           style={{
             marginTop: 15,
             paddingLeft: 22,
-            // backgroundColor: 'white',
             borderBottomWidth: StyleSheet.hairlineWidth,
             borderColor: gray[300],
           }}
@@ -504,7 +507,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   catText: {
-    fontFamily: bitter.Regular,
+    fontFamily: poppins.Regular,
     fontSize: size.sm,
     textAlign: 'center',
     color: gray[800],

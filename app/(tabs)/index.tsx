@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native'
-const index = () => {
+const IndexPage = () => {
   return (
     <View>
-      <Text>index</Text>
+      <Text>IndexPage</Text>
     </View>
   )
 }
-export default index
+export default IndexPage
 const styles = StyleSheet.create({})
