@@ -91,6 +91,7 @@ export const storeItemsInsertSchema = createInsertSchema(storeItems, {
       message: 'Invalid cost',
     }),
 }).pick({
+  id: true,
   name: true,
   dateBought: true,
   dateExpiry: true,
