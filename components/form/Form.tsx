@@ -31,7 +31,7 @@ import { add, format } from 'date-fns'
 import FormDateModal from './FormDateModal'
 import { useQuery } from '@tanstack/react-query'
 import { getTagOptions } from '@/db/seeding'
-import Chips from '../UI/Chips'
+import Chips from '../UI/FormChips'
 import PagerView from 'react-native-pager-view'
 import { capitalize } from '@/utils/capitalize'
 import FormAddBtn from '../UI/FormAddLocBtn'
@@ -282,7 +282,9 @@ const Form = () => {
                   <Text style={styles.dateText}>
                     {format(dateExpiry, 'dd MMM yyyy')}
                   </Text>
-                  <Text style={styles.dateLabels}>Date Expiry</Text>
+                  <Text style={styles.dateLabels}>
+                    {categorySelect === 'food' ? 'Expiry Date' : 'Shelf Life'}
+                  </Text>
                 </Pressable>
               </View>
               <FormDateModal

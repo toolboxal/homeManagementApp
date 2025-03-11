@@ -1,17 +1,18 @@
 import { useMemo, useState, useEffect } from 'react'
-import { StyleSheet, Text, ScrollView, View } from 'react-native'
+import { StyleSheet, Text, ScrollView, View, Pressable } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
 import { locations, storeItems, TStoreItem } from '@/db/schema'
-import { blue, gray } from '@/constants/colors'
+import { blue, gray, brown, green } from '@/constants/colors'
 import { bitter, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
 import { asc, desc } from 'drizzle-orm'
 import { format } from 'date-fns'
+import ItemModal from '@/components/inventory/ItemModal'
 
-type TData = TStoreItem & {
+export type TData = TStoreItem & {
   location: {
     id: number
     room: string
@@ -29,10 +30,18 @@ type TData = TStoreItem & {
 // Define our grouped data structure
 type GroupedItems = Array<[string, TData[]]>
 
+const categoryColor = {
+  food: brown[100],
+  hygiene: green[100],
+  supplies: blue[100],
+  miscellaneous: gray[100],
+}
+
 const InventoryPage = () => {
   const [selectedRoomId, setSelectedRoomId] = useState<number>(99999)
-  // State to hold our grouped items
   const [groupedByLocation, setGroupedByLocation] = useState<GroupedItems>([])
+  const [openItemModal, setOpenItemModal] = useState<boolean>(false)
+  const [selectedItem, setSelectedItem] = useState<TData | null>(null)
 
   const { data: roomList } = useQuery({
     queryKey: ['location', 'rooms'],
@@ -41,13 +50,13 @@ const InventoryPage = () => {
         orderBy: [asc(locations.room)],
       })
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
   const { data: storeItemsList, isLoading } = useQuery({
     queryKey: ['store_items', selectedRoomId],
     queryFn: () => fetchStoreItems(selectedRoomId),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    // staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
   // Process the storeItemsList to group by location.room
@@ -115,17 +124,33 @@ const InventoryPage = () => {
                 {capitalize(locationName)}
               </Text>
               {items.map((item, itemIndex) => (
-                <View key={item.id} style={styles.itemRow}>
+                <Pressable
+                  key={item.id}
+                  style={styles.itemRow}
+                  onPress={() => {
+                    setSelectedItem(item)
+                    setOpenItemModal(true)
+                  }}
+                >
                   <View style={styles.itemDetailsBox}>
                     <Text style={styles.itemName}>{item.name}</Text>
-                    <Text
-                      style={[
-                        styles.itemName,
-                        { fontSize: size.xs, color: gray[400] },
-                      ]}
+                    <View
+                      style={{
+                        flex: 1,
+                        padding: 3,
+                        borderRadius: 4,
+                        backgroundColor: categoryColor[item.category!],
+                      }}
                     >
-                      {item.category}
-                    </Text>
+                      <Text
+                        style={[
+                          styles.itemName,
+                          { fontSize: size.xs, color: gray[400] },
+                        ]}
+                      >
+                        {item.category}
+                      </Text>
+                    </View>
                     <Text
                       style={[
                         styles.itemName,
@@ -163,7 +188,7 @@ const InventoryPage = () => {
                       {item.spot?.spot || 'Unassigned'}
                     </Text>
                   </View>
-                </View>
+                </Pressable>
               ))}
             </View>
           ))}
@@ -173,6 +198,11 @@ const InventoryPage = () => {
           <Text style={styles.emptyStateText}>No items found</Text>
         </View>
       )}
+      <ItemModal
+        selectedItem={selectedItem}
+        openItemModal={openItemModal}
+        setOpenItemModal={setOpenItemModal}
+      />
     </ScrollView>
   )
 }

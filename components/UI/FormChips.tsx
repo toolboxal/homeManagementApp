@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text } from 'react-native'
-import { blue, gray, red } from '@/constants/colors'
+import { gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import Entypo from '@expo/vector-icons/Entypo'
 

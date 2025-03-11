@@ -3,6 +3,7 @@ export const poppins = {
   Medium: 'Poppins_500Medium',
   SemiBold: 'Poppins_600SemiBold',
   Bold: 'Poppins_700Bold',
+  Italic: 'Poppins_400Regular_Italic',
 }
 
 export const bitter = {
