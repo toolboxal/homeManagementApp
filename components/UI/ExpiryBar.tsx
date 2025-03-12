@@ -21,7 +21,8 @@ const ExpiryBar = ({ dateBought, dateExpiry, category }: Props) => {
   const elapsedDuration = differenceInDays(today, boughtDate)
 
   // Calculate progress percentage (capped between 0-100)
-  const progress = Math.abs(
+  const progress = Math.max(
+    0,
     Math.min(100, (elapsedDuration / totalDuration) * 100)
   )
 
@@ -32,7 +33,7 @@ const ExpiryBar = ({ dateBought, dateExpiry, category }: Props) => {
     if (progress >= 50) return gray[500]
     return gray[300]
   }
-  console.log(progress)
+  //   console.log(elapsedDuration, totalDuration)
   return (
     <View style={styles.barTrack}>
       <Text style={[styles.labels, { left: 5 }]}>Date Bought</Text>

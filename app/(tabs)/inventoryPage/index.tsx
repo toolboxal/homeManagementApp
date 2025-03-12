@@ -1,16 +1,23 @@
 import { useMemo, useState, useEffect } from 'react'
+import { Stack } from 'expo-router'
 import { StyleSheet, Text, ScrollView, View, Pressable } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
 import { locations, storeItems, TStoreItem } from '@/db/schema'
-import { blue, gray, brown, green } from '@/constants/colors'
+import { blue, gray, brown, green, red } from '@/constants/colors'
 import { bitter, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
 import { asc, desc } from 'drizzle-orm'
-import { format } from 'date-fns'
+import { format, formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
+import Animated, {
+  FadeInDown,
+  FadeOut,
+  FadeOutUp,
+  LinearTransition,
+} from 'react-native-reanimated'
 
 export type TData = TStoreItem & {
   location: {
@@ -30,11 +37,11 @@ export type TData = TStoreItem & {
 // Define our grouped data structure
 type GroupedItems = Array<[string, TData[]]>
 
-const categoryColor = {
-  food: brown[100],
-  hygiene: green[100],
-  supplies: blue[100],
-  miscellaneous: gray[100],
+const amountAlertColors = {
+  empty: brown[300],
+  low: brown[100],
+  half: green[100],
+  full: green[300],
 }
 
 const InventoryPage = () => {
@@ -42,6 +49,7 @@ const InventoryPage = () => {
   const [groupedByLocation, setGroupedByLocation] = useState<GroupedItems>([])
   const [openItemModal, setOpenItemModal] = useState<boolean>(false)
   const [selectedItem, setSelectedItem] = useState<TData | null>(null)
+  const [searchBarQuery, setSearchBarQuery] = useState<string>('')
 
   const { data: roomList } = useQuery({
     queryKey: ['location', 'rooms'],
@@ -66,8 +74,13 @@ const InventoryPage = () => {
       return
     }
 
+    const searchedItem = storeItemsList.filter((item) => {
+      return item.name.toLowerCase().includes(searchBarQuery.toLowerCase())
+    })
+    console.log(searchedItem)
+
     // Group items by location.room
-    const groupedData = storeItemsList.reduce<Record<string, TData[]>>(
+    const groupedData = searchedItem.reduce<Record<string, TData[]>>(
       (acc, item) => {
         // Use the location room or 'Unassigned' if location is null
         const locationName = item.location?.room || 'Unassigned'
@@ -94,30 +107,52 @@ const InventoryPage = () => {
     })
 
     setGroupedByLocation(groupedArray)
-  }, [storeItemsList])
+  }, [storeItemsList, searchBarQuery])
 
   const completedRoomList = useMemo(
     () => [{ id: 99999, room: 'all_rooms' }, ...(roomList || [])],
     [roomList]
   )
 
+  function calcDaysLeft(date: string) {
+    const today = new Date()
+    const dateResult = formatDistance(today, new Date(date))
+    return dateResult
+  }
+
   return (
-    <ScrollView
+    <Animated.ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
+      layout={LinearTransition.springify()}
     >
+      <Stack.Screen
+        options={{
+          headerSearchBarOptions: {
+            onChangeText: (event) => {
+              const text = event.nativeEvent.text
+              setSearchBarQuery(text)
+              // console.log(text)
+            },
+            onCancelButtonPress: () => {
+              setSearchBarQuery('')
+            },
+          },
+        }}
+      />
       <RoomListScroll
         selectedRoomId={selectedRoomId}
         setSelectedRoomId={setSelectedRoomId}
         roomList={completedRoomList || []}
       />
 
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading items...</Text>
-        </View>
-      ) : groupedByLocation.length > 0 ? (
-        <View style={styles.groupContainer}>
+      {groupedByLocation.length > 0 ? (
+        <Animated.View
+          style={styles.groupContainer}
+          entering={FadeInDown.springify()}
+          exiting={FadeOutUp.springify()}
+          layout={LinearTransition.springify()}
+        >
           {groupedByLocation.map(([locationName, items]) => (
             <View key={locationName} style={styles.locationGroup}>
               <Text style={styles.locationHeader}>
@@ -138,17 +173,18 @@ const InventoryPage = () => {
                       style={{
                         flex: 1,
                         padding: 3,
-                        borderRadius: 4,
-                        backgroundColor: categoryColor[item.category!],
+                        paddingHorizontal: 5,
+                        borderRadius: 2,
+                        backgroundColor: amountAlertColors[item.amount!],
                       }}
                     >
                       <Text
                         style={[
                           styles.itemName,
-                          { fontSize: size.xs, color: gray[400] },
+                          { fontSize: size.xxs, color: gray[700] },
                         ]}
                       >
-                        {item.category}
+                        {item.amount}
                       </Text>
                     </View>
                     <Text
@@ -157,7 +193,9 @@ const InventoryPage = () => {
                         { fontSize: size.xs, color: gray[400] },
                       ]}
                     >
-                      {'date bought: ' + format(item.dateBought, 'dd MMM yy')}
+                      {item.category === 'food'
+                        ? 'Expires in: ' + calcDaysLeft(item.dateExpiry)
+                        : 'To replace in: ' + calcDaysLeft(item.dateExpiry)}
                     </Text>
                   </View>
                   <View
@@ -192,18 +230,23 @@ const InventoryPage = () => {
               ))}
             </View>
           ))}
-        </View>
+        </Animated.View>
       ) : (
-        <View style={styles.emptyState}>
+        <Animated.View
+          style={styles.emptyState}
+          entering={FadeInDown.springify()}
+          exiting={FadeOutUp.springify()}
+          layout={LinearTransition.springify()}
+        >
           <Text style={styles.emptyStateText}>No items found</Text>
-        </View>
+        </Animated.View>
       )}
       <ItemModal
         selectedItem={selectedItem}
         openItemModal={openItemModal}
         setOpenItemModal={setOpenItemModal}
       />
-    </ScrollView>
+    </Animated.ScrollView>
   )
 }
 
@@ -226,6 +269,7 @@ const styles = StyleSheet.create({
   },
   locationGroup: {
     marginBottom: 20,
+
     // borderColor: 'red',
     // borderWidth: 1,
   },
@@ -239,6 +283,7 @@ const styles = StyleSheet.create({
     marginBottom: 1,
   },
   itemRow: {
+    flex: 3,
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 12,

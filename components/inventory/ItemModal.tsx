@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { blue, gray, green } from '@/constants/colors'
+import { blue, gray, green, red } from '@/constants/colors'
 import {
   StyleSheet,
   Text,
@@ -22,6 +22,8 @@ import db from '@/db/db'
 import { storeItems } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import ExpiryBar from '../UI/ExpiryBar'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
 type Props = {
   openItemModal: boolean
@@ -139,6 +141,64 @@ const ItemModal = ({
       onRequestClose={handleClose}
     >
       <Pressable style={styles.overlay} onPress={handleClose}>
+        <View
+          style={{
+            // backgroundColor: 'yellow',
+            width: '92%',
+            marginBottom: 15,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 10,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              borderRadius: 10,
+              width: 70,
+              height: 70,
+              backgroundColor: gray[400],
+            }}
+          >
+            <MaterialCommunityIcons name="cookie" size={25} color="white" />
+            <Text
+              style={{
+                fontFamily: poppins.Medium,
+                fontSize: size.xxs,
+                color: 'white',
+              }}
+            >
+              Consume
+            </Text>
+          </View>
+          <View
+            style={{
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 2,
+              borderRadius: 10,
+              width: 70,
+              height: 70,
+              backgroundColor: gray[400],
+            }}
+          >
+            <Ionicons name="trash-bin" size={25} color="white" />
+            <Text
+              style={{
+                fontFamily: poppins.Medium,
+                fontSize: size.xxs,
+                color: 'white',
+              }}
+            >
+              Discard
+            </Text>
+          </View>
+        </View>
         <Pressable
           onPress={(e) => e.stopPropagation()}
           style={[styles.modalBox]}
@@ -317,10 +377,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
   },
   modalBox: {
-    minHeight: '40%',
+    minHeight: '35%',
     width: '92%',
     backgroundColor: gray[50],
     borderRadius: 25,
