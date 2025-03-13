@@ -38,7 +38,6 @@ const AddLocModal = ({
 }: Props) => {
   const queryClient = useQueryClient()
 
-  // Get the field name based on locType
   const getFieldName = () => {
     switch (locType) {
       case 'room':
@@ -54,7 +53,6 @@ const AddLocModal = ({
 
   const fieldName = getFieldName()
 
-  // Use a type assertion to handle the different form types
   let form: any
 
   if (locType === 'room') {

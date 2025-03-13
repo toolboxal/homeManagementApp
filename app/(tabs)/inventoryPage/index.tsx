@@ -77,7 +77,7 @@ const InventoryPage = () => {
     const searchedItem = storeItemsList.filter((item) => {
       return item.name.toLowerCase().includes(searchBarQuery.toLowerCase())
     })
-    console.log(searchedItem)
+    // console.log(searchedItem)
 
     // Group items by location.room
     const groupedData = searchedItem.reduce<Record<string, TData[]>>(

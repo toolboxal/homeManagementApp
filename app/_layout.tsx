@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Stack, Slot } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
@@ -55,6 +55,7 @@ SplashScreen.preventAutoHideAsync()
 const queryClient = new QueryClient()
 
 export default function RootLayout() {
+  const [dbReady, setDbReady] = useState(false)
   const [loaded, error] = useFonts({
     Poppins_400Regular_Italic,
     Poppins_400Regular,
@@ -66,23 +67,32 @@ export default function RootLayout() {
     Bitter_600SemiBold,
     Bitter_700Bold,
   })
-  useEffect(() => {
-    async function prepare() {
-      await migrate(db, migrations)
-      await seedDatabase()
 
-      if (loaded || error) {
-        SplashScreen.hideAsync()
+  useEffect(() => {
+    async function initializeDatabase() {
+      try {
+        await migrate(db, migrations)
+        await seedDatabase()
+        setDbReady(true)
+      } catch (err) {
+        console.error('Database setup failed:', err)
       }
     }
-    prepare()
-  }, [loaded, error])
+    initializeDatabase()
+  }, [])
+
+  useEffect(() => {
+    if (dbReady && (loaded || error)) {
+      SplashScreen.hideAsync()
+    }
+  }, [dbReady, loaded, error])
 
   useDrizzleStudio(expoDB)
 
-  if (!loaded && !error) {
+  if (!dbReady || (!loaded && !error)) {
     return null
   }
+
   return (
     <SQLiteProvider databaseName="app.db">
       <QueryClientProvider client={queryClient}>
