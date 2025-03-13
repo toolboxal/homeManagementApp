@@ -3,14 +3,14 @@ import { Stack } from 'expo-router'
 import { StyleSheet, Text, ScrollView, View, Pressable } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
-import { locations, storeItems, TStoreItem } from '@/db/schema'
+import { locations, storeItems, TStoreItemSelect } from '@/db/schema'
 import { blue, gray, brown, green, red } from '@/constants/colors'
 import { bitter, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
 import { asc, desc } from 'drizzle-orm'
-import { format, formatDistance } from 'date-fns'
+import { formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
 import Animated, {
   FadeInDown,
@@ -19,7 +19,7 @@ import Animated, {
   LinearTransition,
 } from 'react-native-reanimated'
 
-export type TData = TStoreItem & {
+export type TData = TStoreItemSelect & {
   location: {
     id: number
     room: string
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     flex: 3,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: 'white',

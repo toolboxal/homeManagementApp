@@ -7,6 +7,7 @@ const TabsLayout = () => {
       <Tabs.Screen name="index" />
       <Tabs.Screen name="formPage" />
       <Tabs.Screen name="inventoryPage" />
+      <Tabs.Screen name="shoppingListPage" />
     </Tabs>
   )
 }

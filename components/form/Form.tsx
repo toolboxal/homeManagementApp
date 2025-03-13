@@ -21,7 +21,7 @@ import {
   spots,
   directions,
   storeItems,
-  TStoreItem,
+  TStoreItemInsert,
 } from '@/db/schema'
 import db from '@/db/db'
 import { eq } from 'drizzle-orm'
@@ -124,7 +124,7 @@ const Form = () => {
         ])
 
       // Step 3: Insert store item with the locationId,spotId and directionId
-      const storeItemData: TStoreItem = {
+      const storeItemData: TStoreItemInsert = {
         name: data.name,
         dateBought: format(dateBought, 'yyyy-MM-dd'),
         dateExpiry: format(dateExpiry, 'yyyy-MM-dd'),

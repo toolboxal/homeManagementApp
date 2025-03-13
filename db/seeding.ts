@@ -1,6 +1,12 @@
 import db from './db'
 import { sql } from 'drizzle-orm'
-import { directions, locations, spots, storeItems, TStoreItem } from './schema'
+import {
+  directions,
+  locations,
+  spots,
+  storeItems,
+  TStoreItemInsert,
+} from './schema'
 
 const seedRooms = [
   { room: 'kitchen' },
@@ -77,15 +83,13 @@ export const seedDatabase = async () => {
     db.select().from(spots),
   ])
 
-  const seedItems: TStoreItem[] = [
+  const seedItems: TStoreItemInsert[] = [
     {
       name: 'Maiji Dark Chocolate',
       dateBought: '2024-12-20',
       dateExpiry: '2025-06-14',
       cost: '3.50',
-      status: 'active',
       quantity: '1',
-      amount: 'full',
       category: 'food',
       directionId: directionArr[0].id,
       spotId: spotArr[0].id,
@@ -96,9 +100,7 @@ export const seedDatabase = async () => {
       dateBought: '2025-02-07',
       dateExpiry: '2027-01-20',
       cost: '1.99',
-      status: 'active',
       quantity: '1',
-      amount: 'full',
       category: 'food',
       directionId: directionArr[6].id,
       spotId: spotArr[2].id,
@@ -109,9 +111,7 @@ export const seedDatabase = async () => {
       dateBought: '2024-11-02',
       dateExpiry: '2026-04-10',
       cost: '8.35',
-      status: 'active',
       quantity: '8',
-      amount: 'full',
       category: 'supplies',
       directionId: directionArr[10].id,
       spotId: spotArr[7].id,
@@ -122,9 +122,7 @@ export const seedDatabase = async () => {
       dateBought: '2024-05-23',
       dateExpiry: '2026-01-15',
       cost: '2.70',
-      status: 'active',
       quantity: '1',
-      amount: 'full',
       category: 'miscellaneous',
       directionId: directionArr[1].id,
       spotId: spotArr[8].id,
