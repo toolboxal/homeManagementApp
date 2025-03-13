@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Stack } from 'expo-router'
-import { StyleSheet, Text, ScrollView, View, Pressable } from 'react-native'
+import { StyleSheet, Text, View, Pressable } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
 import { locations, storeItems, TStoreItemSelect } from '@/db/schema'

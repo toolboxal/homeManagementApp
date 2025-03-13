@@ -19,9 +19,11 @@ import { getTagOptions } from '@/db/seeding'
 import Chips from '../UI/FormChips'
 import { capitalize } from '@/utils/capitalize'
 import db from '@/db/db'
-import { storeItems } from '@/db/schema'
+import { shoppingList, storeItems } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import ExpiryBar from '../UI/ExpiryBar'
+import { toast } from 'sonner-native'
+import CustomToast from '../UI/CustomToast'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 
@@ -267,9 +269,22 @@ const ItemModal = ({
                     fontSize: size.sm,
                     textDecorationLine: 'none',
                   }}
-                  onPress={(isChecked: boolean) => {
+                  onPress={async (isChecked: boolean) => {
                     // console.log(isChecked)
-                    setChecked(!isChecked)
+                    if (isChecked) {
+                      await db.insert(shoppingList).values({
+                        name: selectedItem?.name || '',
+                      })
+                      queryClient.invalidateQueries({
+                        queryKey: ['shoppingList'],
+                      })
+                      toast.custom(
+                        <CustomToast message="Item added to shopping list" />
+                      )
+                      setChecked(!isChecked)
+                    } else {
+                      setChecked(!isChecked)
+                    }
                   }}
                 />
               </View>

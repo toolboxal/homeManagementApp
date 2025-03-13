@@ -3,8 +3,10 @@ import { sql } from 'drizzle-orm'
 import {
   directions,
   locations,
+  shoppingList,
   spots,
   storeItems,
+  TShoppingListInsert,
   TStoreItemInsert,
 } from './schema'
 
@@ -50,6 +52,13 @@ const seedSpots = [
   { spot: 'basket' },
   { spot: 'container' },
   { spot: 'rack' },
+]
+
+const seedShoppingList: TShoppingListInsert[] = [
+  { name: 'A loaf of bread' },
+  { name: 'Brand XYZ Detergent' },
+  { name: 'AAA batteries' },
+  { name: 'Chocolate Ice cream' },
 ]
 
 export const seedDatabase = async () => {
@@ -138,6 +147,15 @@ export const seedDatabase = async () => {
     await db.insert(storeItems).values(seedItems)
     console.log('Seeding items complete!')
   }
+
+  // const countShoppingList = await db
+  //   .select({ count: sql<number>`count(*)` })
+  //   .from(shoppingList)
+  // if (countShoppingList[0].count === 0) {
+  //   console.log('Seeding shopping list...')
+  //   await db.insert(shoppingList).values(seedShoppingList)
+  //   console.log('Seeding shopping list complete!')
+  // }
 }
 
 export const getTagOptions = async () => {

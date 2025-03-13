@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Stack, Slot } from 'expo-router'
+import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
 import { SQLiteProvider } from 'expo-sqlite'
 import {
@@ -49,6 +50,7 @@ import db, { expoDB } from '@/db/db'
 import migrations from '@/drizzle/migrations'
 import { seedDatabase } from '@/db/seeding'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'sonner-native'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -96,9 +98,12 @@ export default function RootLayout() {
   return (
     <SQLiteProvider databaseName="app.db">
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-          <Stack.Screen name="(tabs)" />
-        </Stack>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+          <Toaster richColors position="top-center" />
+        </GestureHandlerRootView>
       </QueryClientProvider>
     </SQLiteProvider>
   )
