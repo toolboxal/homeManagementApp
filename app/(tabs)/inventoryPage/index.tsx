@@ -9,12 +9,11 @@ import { bitter, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
-import { asc, desc } from 'drizzle-orm'
+import { asc } from 'drizzle-orm'
 import { formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
 import Animated, {
   FadeInDown,
-  FadeOut,
   FadeOutUp,
   LinearTransition,
 } from 'react-native-reanimated'
@@ -255,7 +254,7 @@ export default InventoryPage
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 12,
     backgroundColor: gray[50],
   },
   title: {

@@ -24,9 +24,9 @@ import { Trash2Icon } from 'lucide-react-native'
 const shoppingListPage = () => {
   const [openAddNewItemModal, setOpenAddNewItemModal] = useState(false)
   const [mode, setMode] = useState<'create' | 'edit'>('create')
-  const [selectedItem, setSelectedItem] = useState<TShoppingListInsert | undefined>(
-    undefined
-  )
+  const [selectedItem, setSelectedItem] = useState<
+    TShoppingListInsert | undefined
+  >(undefined)
 
   const { data: shoppingListData, refetch } = useQuery({
     queryKey: ['shoppingList'],
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   title: {
-    fontFamily: poppins.SemiBold,
+    fontFamily: poppins.Regular,
     fontSize: size.xxl,
     color: gray[900],
   },

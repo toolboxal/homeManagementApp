@@ -36,7 +36,7 @@ export const storeItems = sqliteTable('store_items', {
   dateExpiry: text('date_expiry').notNull(),
   cost: text('cost').notNull().default('0'),
   status: text('status', {
-    enum: ['active', 'consumed', 'disposed', 'deleted'],
+    enum: ['active', 'consumed', 'disposed', 'deleted', 'recycled'],
   }).default('active'),
   quantity: text('quantity').notNull().default('1'),
   amount: text('amount', { enum: ['empty', 'low', 'half', 'full'] }).default(
@@ -98,7 +98,7 @@ export const storeItemsInsertSchema = createInsertSchema(storeItems, {
     schema.regex(/^(?:\d+(?:[.,]\d{0,2})?|[.,]\d{1,2})$/, {
       message: 'Invalid cost',
     }),
-  status: z.enum(['active', 'consumed', 'disposed', 'deleted']),
+  status: z.enum(['active', 'consumed', 'disposed', 'deleted', 'recycled']),
 }).pick({
   id: true,
   name: true,

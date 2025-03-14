@@ -8,11 +8,11 @@ const InventoryLayout = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: 'Inventory',
+          title: 'Purchase History',
           presentation: 'card',
           headerLargeTitle: true,
           headerSearchBarOptions: {
-            placeholder: 'Search inventory',
+            placeholder: 'Search history',
             barTintColor: 'white',
             tintColor: blue[500],
           },
