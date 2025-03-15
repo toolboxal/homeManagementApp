@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import { useQuery } from '@tanstack/react-query'
-import db from '@/db/db'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  Alert,
+} from 'react-native'
+import { Stack } from 'expo-router'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { storeItems, TStoreItemSelect } from '@/db/schema'
-import { blue, brown, gray, green } from '@/constants/colors'
-import { bitter, poppins, size } from '@/constants/fonts'
+import { blue, brown, gray, green, red } from '@/constants/colors'
+import { poppins, size } from '@/constants/fonts'
 import { fetchNonActiveItems } from '@/utils/fetchNonActiveItems'
 import Animated, {
   FadeInDown,
@@ -12,6 +20,11 @@ import Animated, {
   LinearTransition,
 } from 'react-native-reanimated'
 import { capitalize } from '@/utils/capitalize'
+import { Drumstick, Recycle, Trash2 } from 'lucide-react-native'
+import { format } from 'date-fns'
+import * as ContextMenu from 'zeego/context-menu'
+import { eq, not } from 'drizzle-orm'
+import db from '@/db/db'
 
 type GroupedItems = Array<[string, TStoreItemSelect[]]>
 
@@ -22,11 +35,23 @@ const amountAlertColors = {
   full: green[300],
 }
 
+const statusHeaderEmoji: Record<string, React.ReactNode> = {
+  consumed: <Drumstick size={20} color={blue[500]} strokeWidth={2.5} />,
+  recycled: <Recycle size={20} color={green[500]} strokeWidth={2.5} />,
+  disposed: <Trash2 size={20} color={red[400]} strokeWidth={2.5} />,
+  deleted: null,
+}
+
 const HistoryPage = () => {
   const [groupedByStatus, setGroupedByStatus] = useState<GroupedItems>([])
   const [searchBarQuery, setSearchBarQuery] = useState<string>('')
+  const queryClient = useQueryClient()
 
-  const { data: storeItemsList } = useQuery({
+  const {
+    data: storeItemsList,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['history'],
     queryFn: fetchNonActiveItems,
   })
@@ -58,10 +83,10 @@ const HistoryPage = () => {
       },
       {}
     )
-    // Convert the grouped data object to an array of [locationName, items] pairs
+    // Convert the grouped data object to an array of [statusName, items] pairs
     const groupedArray = Object.entries(groupedData)
 
-    // Sort by location name (but keep 'Unassigned' at the end)
+    // Sort by status name (but keep 'Unassigned' at the end)
     groupedArray.sort((a, b) => {
       if (a[0] === 'Unassigned') return 1
       if (b[0] === 'Unassigned') return -1
@@ -71,11 +96,45 @@ const HistoryPage = () => {
     setGroupedByStatus(groupedArray)
   }, [storeItemsList, searchBarQuery])
 
+  const handleUndo = async (id: number) => {
+    await db
+      .update(storeItems)
+      .set({ status: 'active' })
+      .where(eq(storeItems.id, id))
+    queryClient.invalidateQueries({ queryKey: ['store_items'] })
+    queryClient.invalidateQueries({ queryKey: ['history'] })
+  }
+
+  const handleClearHistory = async () => {
+    await db.delete(storeItems).where(not(eq(storeItems.status, 'active')))
+    queryClient.invalidateQueries({ queryKey: ['history'] })
+  }
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
     >
+      <Stack.Screen
+        options={{
+          headerSearchBarOptions: {
+            onChangeText: (event) => {
+              const text = event.nativeEvent.text
+              setSearchBarQuery(text)
+              // console.log(text)
+            },
+            onCancelButtonPress: () => {
+              setSearchBarQuery('')
+            },
+          },
+        }}
+      />
+      {isLoading && (
+        <View style={{ flex: 1 }}>
+          <ActivityIndicator size={'large'} color={blue[500]} />
+        </View>
+      )}
+
       {groupedByStatus.length > 0 ? (
         <Animated.View
           style={styles.groupContainer}
@@ -83,18 +142,42 @@ const HistoryPage = () => {
           exiting={FadeOutUp.springify()}
           layout={LinearTransition.springify()}
         >
+          <Pressable
+            style={styles.clearHistoryBox}
+            onPress={() =>
+              Alert.alert(
+                'Clear History',
+                'This will permanently delete all items in this list.',
+                [
+                  {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Confirm',
+                    onPress: async () => {
+                      await handleClearHistory()
+                    },
+                  },
+                ]
+              )
+            }
+          >
+            <Text style={styles.clearHistoryTxt}>Clear History</Text>
+          </Pressable>
           {groupedByStatus.map(([status, items]) => (
             <View key={status} style={styles.statusGroup}>
-              <Text style={styles.statusHeader}>{capitalize(status)}</Text>
+              <View style={styles.statusHeaderBox}>
+                {statusHeaderEmoji[status]}
+                <Text style={styles.statusHeader}>{capitalize(status)}</Text>
+              </View>
               {items.map((item, itemIndex) => (
-                <Pressable
-                  key={item.id}
-                  style={styles.itemRow}
-                  onPress={() => {}}
-                >
-                  <View style={styles.itemDetailsBox}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                    <View
+                <ContextMenu.Root key={item.id}>
+                  <ContextMenu.Trigger>
+                    <View key={item.id} style={styles.itemRow}>
+                      <Text style={styles.itemName}>{item.name}</Text>
+                      {/* <View
                       style={{
                         flex: 1,
                         padding: 3,
@@ -111,9 +194,25 @@ const HistoryPage = () => {
                       >
                         {item.amount}
                       </Text>
+                    </View> */}
+                      <Text style={styles.dateStyle}>
+                        {'Purchased On: ' +
+                          format(item.dateBought, 'dd MMM yy')}
+                      </Text>
                     </View>
-                  </View>
-                </Pressable>
+                  </ContextMenu.Trigger>
+                  <ContextMenu.Content>
+                    <ContextMenu.Item
+                      key="undo"
+                      onSelect={() => handleUndo(item.id)}
+                    >
+                      <ContextMenu.ItemIcon
+                        ios={{ name: 'arrow.uturn.left.circle' }}
+                      />
+                      <ContextMenu.ItemTitle>Undo</ContextMenu.ItemTitle>
+                    </ContextMenu.Item>
+                  </ContextMenu.Content>
+                </ContextMenu.Root>
               ))}
             </View>
           ))}
@@ -125,7 +224,24 @@ const HistoryPage = () => {
           exiting={FadeOutUp.springify()}
           layout={LinearTransition.springify()}
         >
-          <Text style={styles.emptyStateText}>No items found</Text>
+          <Text style={styles.emptyStateText}>
+            Inventory Items marked as consumed, recycled or disposed will appear
+            here.
+          </Text>
+          <View style={styles.emptyStateIcons}>
+            <View style={styles.iconWithLabel}>
+              <Drumstick size={20} color={blue[500]} strokeWidth={2.5} />
+              <Text style={styles.iconLabel}>Consumed</Text>
+            </View>
+            <View style={styles.iconWithLabel}>
+              <Recycle size={20} color={green[500]} strokeWidth={2.5} />
+              <Text style={styles.iconLabel}>Recycled</Text>
+            </View>
+            <View style={styles.iconWithLabel}>
+              <Trash2 size={20} color={red[400]} strokeWidth={2.5} />
+              <Text style={styles.iconLabel}>Disposed</Text>
+            </View>
+          </View>
         </Animated.View>
       )}
     </ScrollView>
@@ -152,9 +268,15 @@ const styles = StyleSheet.create({
   statusGroup: {
     marginBottom: 20,
   },
+  statusHeaderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingRight: 5,
+  },
   statusHeader: {
     fontFamily: poppins.SemiBold,
-    fontSize: size.md,
+    fontSize: size.xl,
     color: gray[600],
     paddingVertical: 8,
     marginBottom: 1,
@@ -162,33 +284,50 @@ const styles = StyleSheet.create({
   itemRow: {
     flex: 3,
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: 'white',
     marginBottom: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: gray[300],
   },
   itemName: {
     fontFamily: poppins.Medium,
-    fontSize: size.sm,
+    fontSize: size.xs,
     color: gray[900],
   },
-  itemDetailsBox: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    // backgroundColor: 'yellow',
-    gap: 2,
+  dateStyle: {
+    fontFamily: poppins.Regular,
+    fontSize: size.xxs,
   },
   emptyState: {
     padding: 24,
-    alignItems: 'center',
-    marginTop: 16,
+    marginTop: 120,
   },
   emptyStateText: {
     fontFamily: poppins.Regular,
     fontSize: size.md,
-    color: gray[500],
+    color: gray[400],
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  emptyStateIcons: {
+    flexDirection: 'row',
+    gap: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconWithLabel: {
+    alignItems: 'center',
+    gap: 4,
+  },
+  iconLabel: {
+    fontFamily: poppins.Regular,
+    fontSize: size.xs,
+    color: gray[400],
   },
   loadingContainer: {
     padding: 24,
@@ -199,5 +338,18 @@ const styles = StyleSheet.create({
     fontFamily: poppins.Regular,
     fontSize: size.md,
     color: gray[500],
+  },
+  clearHistoryBox: {
+    backgroundColor: red[50],
+    padding: 5,
+    borderRadius: 8,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  clearHistoryTxt: {
+    fontFamily: poppins.Regular,
+    fontSize: size.sm,
+    color: red[500],
   },
 })

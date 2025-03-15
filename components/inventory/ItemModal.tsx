@@ -26,6 +26,7 @@ import { toast } from 'sonner-native'
 import CustomToast from '../UI/CustomToast'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
+import Fontisto from '@expo/vector-icons/Fontisto'
 
 type Props = {
   openItemModal: boolean
@@ -135,6 +136,22 @@ const ItemModal = ({
     setOpenItemModal(false)
   }
 
+  const handleStatusChange = async (
+    status: 'consumed' | 'recycled' | 'disposed',
+    id: number
+  ) => {
+    if (!selectedItem) return
+
+    await db
+      .update(storeItems)
+      .set({ status: status })
+      .where(eq(storeItems.id, id))
+
+    queryClient.invalidateQueries({ queryKey: ['store_items'] })
+    queryClient.invalidateQueries({ queryKey: ['history'] })
+    setOpenItemModal(false)
+  }
+
   return (
     <Modal
       animationType="fade"
@@ -147,59 +164,40 @@ const ItemModal = ({
           style={{
             // backgroundColor: 'yellow',
             width: '92%',
-            marginBottom: 15,
+            marginBottom: 12,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'center',
             gap: 10,
           }}
         >
-          <View
-            style={{
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              borderRadius: 10,
-              width: 70,
-              height: 70,
-              backgroundColor: gray[400],
+          <Pressable
+            style={styles.optionBox}
+            onPress={() => {
+              handleStatusChange('consumed', selectedItem!.id)
             }}
           >
             <MaterialCommunityIcons name="cookie" size={25} color="white" />
-            <Text
-              style={{
-                fontFamily: poppins.Medium,
-                fontSize: size.xxs,
-                color: 'white',
-              }}
-            >
-              Consume
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 2,
-              borderRadius: 10,
-              width: 70,
-              height: 70,
-              backgroundColor: gray[400],
+            <Text style={styles.optionTxt}>Consume</Text>
+          </Pressable>
+          <Pressable
+            style={styles.optionBox}
+            onPress={() => {
+              handleStatusChange('recycled', selectedItem!.id)
+            }}
+          >
+            <Fontisto name="recycle" size={25} color="white" />
+            <Text style={styles.optionTxt}>Recycle</Text>
+          </Pressable>
+          <Pressable
+            style={styles.optionBox}
+            onPress={() => {
+              handleStatusChange('disposed', selectedItem!.id)
             }}
           >
             <Ionicons name="trash-bin" size={25} color="white" />
-            <Text
-              style={{
-                fontFamily: poppins.Medium,
-                fontSize: size.xxs,
-                color: 'white',
-              }}
-            >
-              Discard
-            </Text>
-          </View>
+            <Text style={styles.optionTxt}>Dispose</Text>
+          </Pressable>
         </View>
         <Pressable
           onPress={(e) => e.stopPropagation()}
@@ -469,4 +467,15 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 5,
   },
+  optionBox: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    borderRadius: 10,
+    width: 70,
+    height: 70,
+    backgroundColor: gray[400],
+  },
+  optionTxt: { fontFamily: poppins.Medium, fontSize: size.xxs, color: 'white' },
 })
