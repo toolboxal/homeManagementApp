@@ -2,8 +2,8 @@ import db from '@/db/db'
 import { storeItems } from '@/db/schema'
 import { desc, asc, eq, and } from 'drizzle-orm'
 
-export const fetchStoreItems = async (selectedRoomId: number) => {
-  if (selectedRoomId === 99999) {
+export const fetchStoreItems = async (selectedRoomId?: number) => {
+  if (selectedRoomId === 99999 || !selectedRoomId) {
     return await db.query.storeItems.findMany({
       where: eq(storeItems.status, 'active'),
       orderBy: [

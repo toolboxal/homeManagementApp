@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
@@ -7,7 +7,7 @@ import { Recycle, Trash2 } from 'lucide-react-native'
 import { poppins, size } from '@/constants/fonts'
 import { startOfMonth, startOfYear, format, differenceInDays } from 'date-fns'
 import db from '@/db/db'
-import { storeItems } from '@/db/schema'
+import { storeItems, TStoreItemSelect } from '@/db/schema'
 import { and, eq, gte, lte } from 'drizzle-orm'
 import {
   PiggyBank,
@@ -16,6 +16,9 @@ import {
   BatteryLow,
   OctagonAlert,
 } from 'lucide-react-native'
+import DashBoardModal from '@/components/dashboard/DashBoardModal'
+import { fetchStoreItems } from '@/utils/fetchStoreItems'
+import { TData } from './inventoryPage'
 
 const IndexPage = () => {
   const [selectedDateRange, setSelectedDateRange] = useState({
@@ -23,16 +26,23 @@ const IndexPage = () => {
     endDate: new Date(),
   })
   const [tabSelected, setTabSelected] = useState('month')
-
-  const { data: allStoreItems } = useQuery({
-    queryKey: ['all_store_items'],
-    queryFn: async () => {
-      return await db.query.storeItems.findMany({
-        where: eq(storeItems.status, 'active'),
-      })
-    },
+  const [openItemModal, setOpenItemModal] = useState(false)
+  const [modalDataFeed, setModalDataFeed] = useState<TData[] | null>(null)
+  const [modalInfo, setModalInfo] = useState<{
+    headerText: string
+    description: string
+  }>({
+    headerText: '',
+    description: '',
   })
 
+  const { data: allStoreItems } = useQuery({
+    queryKey: ['store_items'],
+    queryFn: async () => {
+      return await fetchStoreItems()
+    },
+  })
+  console.log(allStoreItems)
   const { data: storeItemsByDateBought } = useQuery({
     queryKey: [
       'store_items_date_bought',
@@ -114,7 +124,7 @@ const IndexPage = () => {
       const expiryDate = new Date(item.dateExpiry)
       const today = new Date()
       const daysUntilExpiry = differenceInDays(expiryDate, today)
-      return daysUntilExpiry <= 0
+      return daysUntilExpiry < 0
     }
     return false
   })
@@ -210,26 +220,15 @@ const IndexPage = () => {
               : 'Some disposed items has leftovers. What would you change to do better next time?'}
           </Text>
         </View>
-        <View style={styles.infoBox}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Text style={styles.infoTitle}>Food expiring in one week</Text>
-            <ChevronRight size={18} color={gray[300]} strokeWidth={2.5} />
-          </View>
-
-          <View style={styles.figuresBox}>
-            <Cookie size={25} color={blue[400]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>
-              {expiringOneWeek?.length || 0}
-            </Text>
-          </View>
-        </View>
-        <View
+        <Pressable
+          onPress={() => {
+            setModalDataFeed(expiredFoods || null)
+            setOpenItemModal(true)
+            setModalInfo({
+              headerText: 'Expired Food',
+              description: 'Go to Inventory to dispose',
+            })
+          }}
           style={[
             styles.infoBox,
             {
@@ -252,8 +251,48 @@ const IndexPage = () => {
             <OctagonAlert size={25} color={red[600]} strokeWidth={2.5} />
             <Text style={styles.figureText}>{expiredFoods?.length || 0}</Text>
           </View>
-        </View>
-        <View style={styles.infoBox}>
+        </Pressable>
+        <Pressable
+          style={styles.infoBox}
+          onPress={() => {
+            setModalDataFeed(expiringOneWeek || null)
+            setOpenItemModal(true)
+            setModalInfo({
+              headerText: 'Expiring soon',
+              description: 'Check before consumption',
+            })
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text style={styles.infoTitle}>Food expiring in one week</Text>
+            <ChevronRight size={18} color={gray[300]} strokeWidth={2.5} />
+          </View>
+
+          <View style={styles.figuresBox}>
+            <Cookie size={25} color={blue[400]} strokeWidth={2.5} />
+            <Text style={styles.figureText}>
+              {expiringOneWeek?.length || 0}
+            </Text>
+          </View>
+        </Pressable>
+
+        <Pressable
+          style={styles.infoBox}
+          onPress={() => {
+            setModalDataFeed(replaceOneMonth || null)
+            setOpenItemModal(true)
+            setModalInfo({
+              headerText: 'Needs replaceing soon',
+              description: "Item's marked for replacing",
+            })
+          }}
+        >
           <View
             style={{
               flexDirection: 'row',
@@ -271,7 +310,14 @@ const IndexPage = () => {
               {replaceOneMonth?.length || 0}
             </Text>
           </View>
-        </View>
+        </Pressable>
+        <DashBoardModal
+          openItemModal={openItemModal}
+          setOpenItemModal={setOpenItemModal}
+          modalDataFeed={modalDataFeed}
+          title={modalInfo.headerText}
+          description={modalInfo.description}
+        />
       </ScrollView>
     </SafeAreaView>
   )

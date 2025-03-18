@@ -10,7 +10,7 @@ import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
 import { asc } from 'drizzle-orm'
-import { formatDistance } from 'date-fns'
+import { differenceInDays, formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
 import Animated, {
   FadeInDown,
@@ -113,10 +113,20 @@ const InventoryPage = () => {
     [roomList]
   )
 
-  function calcDaysLeft(date: string) {
+  function calcDaysLeft(date: string, category: string) {
     const today = new Date()
-    const dateResult = formatDistance(today, new Date(date))
-    return dateResult
+    const differenceDays = differenceInDays(new Date(date), today)
+    if (category === 'food' && differenceDays <= 0) {
+      return 'Expired'
+    } else if (category !== 'food' && differenceDays <= 0) {
+      return 'Time to replace'
+    } else if (category === 'food' && differenceDays > 0) {
+      const dateResult = formatDistance(new Date(date), today)
+      return `Expires in: ${dateResult}`
+    } else if (category !== 'food' && differenceDays > 0) {
+      const dateResult = formatDistance(new Date(date), today)
+      return `To replace in: ${dateResult}`
+    }
   }
 
   return (
@@ -190,11 +200,13 @@ const InventoryPage = () => {
                       style={[
                         styles.itemName,
                         { fontSize: size.xs, color: gray[400] },
+                        (calcDaysLeft(item.dateExpiry, item.category!) ===
+                          'Expired' ||
+                          calcDaysLeft(item.dateExpiry, item.category!) ===
+                            'Time to replace') && { color: red[400] },
                       ]}
                     >
-                      {item.category === 'food'
-                        ? 'Expires in: ' + calcDaysLeft(item.dateExpiry)
-                        : 'To replace in: ' + calcDaysLeft(item.dateExpiry)}
+                      {calcDaysLeft(item.dateExpiry, item.category!)}
                     </Text>
                   </View>
                   <View
