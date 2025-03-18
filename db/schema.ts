@@ -2,6 +2,7 @@ import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { relations } from 'drizzle-orm'
 import { z } from 'zod'
+import { format } from 'date-fns'
 
 export const locations = sqliteTable('locations', {
   id: int('id').primaryKey({ autoIncrement: true }),
@@ -34,6 +35,9 @@ export const storeItems = sqliteTable('store_items', {
   name: text('name').notNull(),
   dateBought: text('date_bought').notNull(),
   dateExpiry: text('date_expiry').notNull(),
+  dateStatusChange: text('date_status_change')
+    .notNull()
+    .default(format(new Date(), 'yyyy-MM-dd')),
   cost: text('cost').notNull().default('0'),
   status: text('status', {
     enum: ['active', 'consumed', 'disposed', 'deleted', 'recycled'],

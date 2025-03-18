@@ -29,6 +29,20 @@
       "when": 1741858840766,
       "tag": "0003_blue_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1742196854160,
+      "tag": "0004_brave_switch",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1742197406086,
+      "tag": "0005_many_rocket_racer",
+      "breakpoints": true
     }
   ]
 }

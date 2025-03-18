@@ -27,6 +27,7 @@ import CustomToast from '../UI/CustomToast'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Fontisto from '@expo/vector-icons/Fontisto'
+import { format } from 'date-fns'
 
 type Props = {
   openItemModal: boolean
@@ -144,7 +145,10 @@ const ItemModal = ({
 
     await db
       .update(storeItems)
-      .set({ status: status })
+      .set({
+        status: status,
+        dateStatusChange: format(new Date(), 'yyyy-MM-dd'),
+      })
       .where(eq(storeItems.id, id))
 
     queryClient.invalidateQueries({ queryKey: ['store_items'] })

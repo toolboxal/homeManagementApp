@@ -99,7 +99,10 @@ const HistoryPage = () => {
   const handleUndo = async (id: number) => {
     await db
       .update(storeItems)
-      .set({ status: 'active' })
+      .set({
+        status: 'active',
+        dateStatusChange: format(new Date(), 'yyyy-MM-dd'),
+      })
       .where(eq(storeItems.id, id))
     queryClient.invalidateQueries({ queryKey: ['store_items'] })
     queryClient.invalidateQueries({ queryKey: ['history'] })

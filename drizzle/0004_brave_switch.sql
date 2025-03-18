@@ -1,0 +1,1 @@
+ALTER TABLE `store_items` ADD `date_status_change` text DEFAULT '2025-03-17T07:34:14.147Z' NOT NULL;
