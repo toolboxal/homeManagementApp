@@ -51,6 +51,14 @@ import migrations from '@/drizzle/migrations'
 import { seedDatabase } from '@/db/seeding'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Toaster } from 'sonner-native'
+import {
+  Oswald_200ExtraLight,
+  Oswald_300Light,
+  Oswald_400Regular,
+  Oswald_500Medium,
+  Oswald_600SemiBold,
+  Oswald_700Bold,
+} from '@expo-google-fonts/oswald'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -68,6 +76,12 @@ export default function RootLayout() {
     Bitter_500Medium,
     Bitter_600SemiBold,
     Bitter_700Bold,
+    Oswald_200ExtraLight,
+    Oswald_300Light,
+    Oswald_400Regular,
+    Oswald_500Medium,
+    Oswald_600SemiBold,
+    Oswald_700Bold,
   })
 
   useEffect(() => {

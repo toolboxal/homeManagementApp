@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/bitter": "^0.2.3",
+    "@expo-google-fonts/oswald": "^0.2.3",
     "@expo-google-fonts/poppins": "^0.2.3",
     "@expo/vector-icons": "^14.0.2",
     "@gorhom/bottom-sheet": "^5",

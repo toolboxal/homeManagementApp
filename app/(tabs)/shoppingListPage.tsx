@@ -13,7 +13,7 @@ import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
 import { shoppingList, TShoppingListInsert } from '@/db/schema'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
-import { poppins, size } from '@/constants/fonts'
+import { oswald, poppins, size } from '@/constants/fonts'
 import AddShoppingItemModal from '@/components/shoppingList/AddShoppingItemModal'
 import { Tabs } from 'expo-router'
 import { eq } from 'drizzle-orm'
@@ -203,9 +203,9 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   title: {
-    fontFamily: poppins.Regular,
-    fontSize: size.xxl,
-    color: gray[900],
+    fontFamily: oswald.Bold,
+    fontSize: size.xxxl,
+    color: gray[950],
   },
   noItemsBox: {
     flex: 1,

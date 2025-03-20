@@ -13,6 +13,15 @@ export const bitter = {
   Bold: 'Bitter_700Bold',
 }
 
+export const oswald = {
+  ExtraLight: 'Oswald_200ExtraLight',
+  Light: 'Oswald_300Light',
+  Regular: 'Oswald_400Regular',
+  Medium: 'Oswald_500Medium',
+  SemiBold: 'Oswald_600SemiBold',
+  Bold: 'Oswald_700Bold',
+}
+
 export const size = {
   xxs: 10,
   xs: 12,
@@ -21,4 +30,5 @@ export const size = {
   lg: 18,
   xl: 20,
   xxl: 28,
+  xxxl: 36,
 }

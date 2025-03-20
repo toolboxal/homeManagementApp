@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Stack } from 'expo-router'
 import { blue, gray } from '@/constants/colors'
-import { poppins, size } from '@/constants/fonts'
+import { oswald, poppins, size } from '@/constants/fonts'
 const InventoryLayout = () => {
   return (
     <Stack>
@@ -20,12 +20,12 @@ const InventoryLayout = () => {
             backgroundColor: gray[50],
           },
           headerTitleStyle: {
-            fontFamily: poppins.Regular,
-            fontSize: size.md,
+            fontFamily: oswald.Regular,
+            fontSize: size.lg,
           },
           headerLargeTitleStyle: {
-            fontFamily: poppins.Regular,
-            fontSize: size.xxl,
+            fontFamily: oswald.SemiBold,
+            fontSize: size.xxxl,
           },
           headerShadowVisible: false,
         }}

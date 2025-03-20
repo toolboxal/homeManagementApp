@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { blue, gray, green, red } from '@/constants/colors'
 import { Recycle, Trash2 } from 'lucide-react-native'
-import { poppins, size } from '@/constants/fonts'
+import { oswald, poppins, size } from '@/constants/fonts'
 import { startOfMonth, startOfYear, format, differenceInDays } from 'date-fns'
 import db from '@/db/db'
 import { storeItems, TStoreItemSelect } from '@/db/schema'
@@ -329,11 +329,10 @@ const styles = StyleSheet.create({
   headerTitleContainer: {
     // backgroundColor: 'orange',
     padding: 12,
-    paddingVertical: 20,
   },
   headerTitleText: {
-    fontFamily: poppins.Medium,
-    fontSize: size.xxl,
+    fontFamily: oswald.Bold,
+    fontSize: size.xxxl,
     color: gray[950],
   },
   scrollContainer: {
