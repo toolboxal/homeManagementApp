@@ -65,12 +65,14 @@ const InventoryPage = () => {
 
   const {
     data: storeItemsList,
-    isLoading,
     refetch,
+    isLoading,
   } = useQuery({
     queryKey: ['store_items', selectedRoomId],
     queryFn: () => fetchStoreItems(selectedRoomId),
     placeholderData: (previousData) => previousData,
+    refetchInterval: 24 * 60 * 60 * 1000, // 24 hours
+    refetchIntervalInBackground: true,
   })
 
   const onRefresh = async () => {
@@ -184,7 +186,7 @@ const InventoryPage = () => {
               <Text style={styles.locationHeader}>
                 {capitalize(locationName)}
               </Text>
-              {items.map((item, itemIndex) => (
+              {items.map((item) => (
                 <Pressable
                   key={item.id}
                   style={[

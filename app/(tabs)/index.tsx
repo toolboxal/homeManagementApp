@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  RefreshControl,
+} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { primary, gray, green, red } from '@/constants/colors'
@@ -20,7 +27,6 @@ import {
 import DashBoardModal from '@/components/dashboard/DashBoardModal'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import Animated, {
-  FadeIn,
   useAnimatedStyle,
   withSpring,
   useSharedValue,
@@ -43,64 +49,84 @@ const IndexPage = () => {
     headerText: '',
     description: '',
   })
+  const [refreshing, setRefreshing] = useState(false)
 
-  const { data: allStoreItems } = useQuery<TData[], Error>({
-    queryKey: ['store_items'],
-    queryFn: async () => {
-      return await fetchStoreItems()
-    },
-  })
-  // console.log(allStoreItems)
-  const { data: storeItemsByDateBought } = useQuery<TStoreItemSelect[], Error>({
-    queryKey: [
-      'store_items_date_bought',
-      selectedDateRange.startDate,
-      selectedDateRange.endDate,
-    ],
-    queryFn: async () => {
-      const startDateStr = format(selectedDateRange.startDate, 'yyyy-MM-dd')
-      const endDateStr = format(selectedDateRange.endDate, 'yyyy-MM-dd')
-      return await db.query.storeItems.findMany({
-        where: and(
-          gte(storeItems.dateBought, startDateStr),
-          lte(storeItems.dateBought, endDateStr)
-        ),
-        with: {
-          location: true,
-          spot: true,
-          direction: true,
-        },
-      })
-    },
-  })
-  // console.log(storeItemsByDateBought)
-
-  const { data: storeItemsByStatusChange } = useQuery<
-    TStoreItemSelect[],
+  const { data: allStoreItems, refetch: refetchAllItems } = useQuery<
+    TData[],
     Error
   >({
-    queryKey: [
-      'store_items_status_change',
-      selectedDateRange.startDate,
-      selectedDateRange.endDate,
-    ],
-    queryFn: async () => {
-      const startDateStr = format(selectedDateRange.startDate, 'yyyy-MM-dd')
-      const endDateStr = format(selectedDateRange.endDate, 'yyyy-MM-dd')
-      return await db.query.storeItems.findMany({
-        where: and(
-          gte(storeItems.dateStatusChange, startDateStr),
-          lte(storeItems.dateStatusChange, endDateStr)
-        ),
-        with: {
-          location: true,
-          spot: true,
-          direction: true,
-        },
-      })
-    },
+    queryKey: ['store_items'],
+    queryFn: async () => fetchStoreItems(),
     placeholderData: (previousData) => previousData,
+    refetchInterval: 1 * 60 * 60 * 1000, // 1 hour
+    refetchIntervalInBackground: true,
   })
+  // console.log(allStoreItems)
+  const { data: storeItemsByDateBought, refetch: refetchByDateBought } =
+    useQuery<TStoreItemSelect[], Error>({
+      queryKey: [
+        'store_items_date_bought',
+        selectedDateRange.startDate,
+        selectedDateRange.endDate,
+      ],
+      queryFn: async () => {
+        const startDateStr = format(selectedDateRange.startDate, 'yyyy-MM-dd')
+        const endDateStr = format(selectedDateRange.endDate, 'yyyy-MM-dd')
+        return await db.query.storeItems.findMany({
+          where: and(
+            gte(storeItems.dateBought, startDateStr),
+            lte(storeItems.dateBought, endDateStr)
+          ),
+          with: {
+            location: true,
+            spot: true,
+            direction: true,
+          },
+        })
+      },
+    })
+  // console.log(storeItemsByDateBought)
+
+  const { data: storeItemsByStatusChange, refetch: refetchByStatusChange } =
+    useQuery<TStoreItemSelect[], Error>({
+      queryKey: [
+        'store_items_status_change',
+        selectedDateRange.startDate,
+        selectedDateRange.endDate,
+      ],
+      queryFn: async () => {
+        const startDateStr = format(selectedDateRange.startDate, 'yyyy-MM-dd')
+        const endDateStr = format(selectedDateRange.endDate, 'yyyy-MM-dd')
+        return await db.query.storeItems.findMany({
+          where: and(
+            gte(storeItems.dateStatusChange, startDateStr),
+            lte(storeItems.dateStatusChange, endDateStr)
+          ),
+          with: {
+            location: true,
+            spot: true,
+            direction: true,
+          },
+        })
+      },
+      placeholderData: (previousData) => previousData,
+    })
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    try {
+      // Refetch all the queries
+      await Promise.all([
+        refetchAllItems(),
+        refetchByDateBought(),
+        refetchByStatusChange(),
+      ])
+    } catch (error) {
+      console.error('Error refreshing data:', error)
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   const recycledArr = storeItemsByStatusChange?.filter(
     (item) => item.status === 'recycled'
@@ -117,29 +143,23 @@ const IndexPage = () => {
     .toFixed(2)
 
   const expiringOneWeek = allStoreItems?.filter((item: TData) => {
-    const daysLeft = differenceInDays(
-      new Date(item.dateExpiry),
-      new Date()
-    )
-    return daysLeft <= 7 && daysLeft >= 0
+    if (item.category !== 'food') return false
+    const daysLeft = differenceInDays(new Date(item.dateExpiry), new Date())
+    return daysLeft <= 7 && daysLeft > 0
   })
 
   const replaceOneMonth = allStoreItems?.filter((item: TData) => {
-    const daysLeft = differenceInDays(
-      new Date(item.dateExpiry),
-      new Date()
-    )
-    return daysLeft <= 30 && daysLeft > 7
+    if (item.category === 'food') return false
+    const daysLeft = differenceInDays(new Date(item.dateExpiry), new Date())
+    return daysLeft <= 30 && daysLeft > 0
   })
 
   const expiredFoods = allStoreItems?.filter((item: TData) => {
-    const daysLeft = differenceInDays(
-      new Date(item.dateExpiry),
-      new Date()
-    )
-    return daysLeft < 0
+    if (item.category !== 'food') return false
+    const daysLeft = differenceInDays(new Date(item.dateExpiry), new Date())
+    return daysLeft <= 0
   })
-  // console.log(expiredFoods)
+  console.log(expiringOneWeek)
 
   // Add shared values for animations
   const animationProgress = useSharedValue(0)
@@ -205,7 +225,11 @@ const IndexPage = () => {
           }}
         >
           <Text
-            style={tabSelected === 'month' ? styles.selectedFilterText : {}}
+            style={
+              tabSelected === 'month'
+                ? styles.selectedFilterText
+                : { fontFamily: poppins.Medium, color: primary[600] }
+            }
           >
             Month
           </Text>
@@ -224,7 +248,13 @@ const IndexPage = () => {
             })
           }}
         >
-          <Text style={tabSelected === 'year' ? styles.selectedFilterText : {}}>
+          <Text
+            style={
+              tabSelected === 'year'
+                ? styles.selectedFilterText
+                : { fontFamily: poppins.Medium, color: primary[600] }
+            }
+          >
             Year
           </Text>
         </Pressable>
@@ -233,6 +263,16 @@ const IndexPage = () => {
         style={styles.scrollContainer}
         contentContainerStyle={{ flex: 1, marginTop: 12, gap: 8 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={primary[500]}
+            colors={[primary[500]]}
+            progressBackgroundColor={primary[500]}
+            size={size.xxs}
+          />
+        }
       >
         <View style={styles.infoBox}>
           <Text style={styles.infoTitle}>
@@ -253,8 +293,8 @@ const IndexPage = () => {
           </View>
           <Text style={styles.infoText}>
             {recycledWastage?.length === 0
-              ? "Let's do it!"
-              : 'Your intentional effort goes to saving the environment!'}
+              ? "Let's do our part!"
+              : 'Your intentional effort is saving the environment!'}
           </Text>
         </View>
         <View style={styles.infoBox}>
@@ -265,7 +305,7 @@ const IndexPage = () => {
           </View>
           <Text style={styles.infoText}>
             {disposedWastage?.length === 0
-              ? 'Good Job! There are no wastage.'
+              ? 'Good Job! There is no wastage.'
               : 'Some leftovers found in disposed items. 😔'}
           </Text>
         </View>

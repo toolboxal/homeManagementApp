@@ -21,6 +21,7 @@ const seedRooms = [
   { room: 'master_bedroom' },
   { room: 'study_room' },
   { room: 'guest_room' },
+  { room: 'children_room' },
 ]
 
 const seedDirections = [
@@ -29,7 +30,7 @@ const seedDirections = [
   { direction: 'left' },
   { direction: 'right' },
   { direction: 'front' },
-  { direction: 'back' },
+  { direction: 'behind' },
   { direction: 'middle' },
   { direction: 'inside' },
   { direction: 'outside' },
@@ -37,6 +38,8 @@ const seedDirections = [
   { direction: '1st' },
   { direction: '2nd' },
   { direction: '3rd' },
+  { direction: 'on' },
+  { direction: 'against' },
 ]
 
 const seedSpots = [
@@ -52,6 +55,10 @@ const seedSpots = [
   { spot: 'basket' },
   { spot: 'container' },
   { spot: 'rack' },
+  { spot: 'table' },
+  { spot: 'door' },
+  { spot: 'wall' },
+  { spot: 'corner' },
 ]
 
 const seedShoppingList: TShoppingListInsert[] = [
@@ -94,33 +101,30 @@ export const seedDatabase = async () => {
 
   const seedItems: TStoreItemInsert[] = [
     {
-      name: 'Maiji Dark Chocolate',
-      dateBought: '2024-12-20',
-      dateExpiry: '2025-06-14',
+      name: 'Moiji dark chocolate',
+      dateBought: '2025-01-14',
+      dateExpiry: '2025-06-10',
       cost: '3.50',
-      quantity: '1',
       category: 'food',
       directionId: directionArr[0].id,
       spotId: spotArr[0].id,
       locationId: locationsArr[0].id,
     },
     {
-      name: 'Can Tuna',
+      name: 'Can tuna',
       dateBought: '2025-02-07',
       dateExpiry: '2027-01-20',
       cost: '1.99',
-      quantity: '1',
       category: 'food',
       directionId: directionArr[6].id,
       spotId: spotArr[2].id,
       locationId: locationsArr[6].id,
     },
     {
-      name: 'Toilet Paper',
+      name: 'Tissue paper',
       dateBought: '2024-11-02',
       dateExpiry: '2026-04-10',
       cost: '8.35',
-      quantity: '8',
       category: 'supplies',
       directionId: directionArr[10].id,
       spotId: spotArr[7].id,
@@ -131,11 +135,40 @@ export const seedDatabase = async () => {
       dateBought: '2024-05-23',
       dateExpiry: '2026-01-15',
       cost: '2.70',
-      quantity: '1',
       category: 'miscellaneous',
       directionId: directionArr[1].id,
       spotId: spotArr[8].id,
       locationId: locationsArr[6].id,
+    },
+    {
+      name: 'Shaving cream',
+      dateBought: '2025-03-03',
+      dateExpiry: '2026-06-05',
+      cost: '2.70',
+      category: 'hygiene',
+      directionId: directionArr[0].id,
+      spotId: spotArr[0].id,
+      locationId: locationsArr[2].id,
+    },
+    {
+      name: 'Scented candles',
+      dateBought: '2025-03-11',
+      dateExpiry: '2026-03-30',
+      cost: '15.00',
+      category: 'miscellaneous',
+      directionId: directionArr[13].id,
+      spotId: spotArr[12].id,
+      locationId: locationsArr[7].id,
+    },
+    {
+      name: 'Cat food',
+      dateBought: '2025-01-18',
+      dateExpiry: '2025-10-05',
+      cost: '7.35',
+      category: 'miscellaneous',
+      directionId: directionArr[6].id,
+      spotId: spotArr[9].id,
+      locationId: locationsArr[3].id,
     },
   ]
 
