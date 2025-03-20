@@ -94,7 +94,6 @@ const Form = () => {
     resolver: zodResolver(storeItemsInsertSchema),
     defaultValues: {
       name: '',
-      quantity: '1',
       cost: '',
       category: 'food',
       dateBought: format(today, 'yyyy-MM-dd'),
@@ -136,7 +135,6 @@ const Form = () => {
         dateBought: format(dateBought, 'yyyy-MM-dd'),
         dateExpiry: format(dateExpiry, 'yyyy-MM-dd'),
         cost: data.cost || '0',
-        quantity: data.quantity,
         category: categorySelect as
           | 'food'
           | 'hygiene'
@@ -218,7 +216,7 @@ const Form = () => {
                   </View>
                 )}
               />
-              <Controller
+              {/* <Controller
                 name="quantity"
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
@@ -239,7 +237,7 @@ const Form = () => {
                     )}
                   </View>
                 )}
-              />
+              /> */}
               <View style={styles.costBox}>
                 <Text style={styles.currency}>{currencyCode}</Text>
                 <Controller

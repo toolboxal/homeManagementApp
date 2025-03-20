@@ -3,15 +3,16 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { primary, gray, green, red } from '@/constants/colors'
-import { Recycle, Trash2 } from 'lucide-react-native'
 import { oswald, poppins, size } from '@/constants/fonts'
 import { startOfMonth, startOfYear, format, differenceInDays } from 'date-fns'
 import db from '@/db/db'
-import { storeItems } from '@/db/schema'
+import { storeItems, TStoreItemSelect } from '@/db/schema'
 import { and, gte, lte } from 'drizzle-orm'
 import {
   PiggyBank,
   Cookie,
+  Recycle,
+  Trash2,
   ChevronRight,
   BatteryLow,
   OctagonAlert,
@@ -19,30 +20,13 @@ import {
 import DashBoardModal from '@/components/dashboard/DashBoardModal'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import Animated, {
+  FadeIn,
   useAnimatedStyle,
   withSpring,
   useSharedValue,
   interpolate,
 } from 'react-native-reanimated'
-
-type TStoreItem = {
-  id: number
-  name: string
-  dateBought: string
-  dateExpiry: string
-  dateStatusChange: string
-  cost: string
-  status: 'active' | 'consumed' | 'disposed' | 'deleted' | 'recycled' | null
-  quantity: string
-  amount: 'empty' | 'low' | 'half' | 'full' | null
-  category: 'food' | 'hygiene' | 'supplies' | 'miscellaneous' | null
-  locationId: number | null
-  spotId: number | null
-  directionId: number | null
-  location: { id: number; room: string } | null
-  spot: { id: number; spot: string } | null
-  direction: { id: number; direction: string } | null
-}
+import { TData } from './inventoryPage'
 
 const IndexPage = () => {
   const [selectedDateRange, setSelectedDateRange] = useState({
@@ -51,7 +35,7 @@ const IndexPage = () => {
   })
   const [tabSelected, setTabSelected] = useState('month')
   const [openItemModal, setOpenItemModal] = useState(false)
-  const [modalDataFeed, setModalDataFeed] = useState<TStoreItem[] | null>(null)
+  const [modalDataFeed, setModalDataFeed] = useState<TData[] | null>(null)
   const [modalInfo, setModalInfo] = useState<{
     headerText: string
     description: string
@@ -60,14 +44,14 @@ const IndexPage = () => {
     description: '',
   })
 
-  const { data: allStoreItems } = useQuery({
+  const { data: allStoreItems } = useQuery<TData[], Error>({
     queryKey: ['store_items'],
     queryFn: async () => {
       return await fetchStoreItems()
     },
   })
   // console.log(allStoreItems)
-  const { data: storeItemsByDateBought } = useQuery<TStoreItem[], Error>({
+  const { data: storeItemsByDateBought } = useQuery<TStoreItemSelect[], Error>({
     queryKey: [
       'store_items_date_bought',
       selectedDateRange.startDate,
@@ -91,7 +75,10 @@ const IndexPage = () => {
   })
   // console.log(storeItemsByDateBought)
 
-  const { data: storeItemsByStatusChange } = useQuery<TStoreItem[], Error>({
+  const { data: storeItemsByStatusChange } = useQuery<
+    TStoreItemSelect[],
+    Error
+  >({
     queryKey: [
       'store_items_status_change',
       selectedDateRange.startDate,
@@ -124,39 +111,35 @@ const IndexPage = () => {
   const recycledWastage = recycledArr?.filter((item) => item.amount !== 'empty')
   const disposedWastage = disposedArr?.filter((item) => item.amount !== 'empty')
   const totalSpent = storeItemsByDateBought
-    ?.reduce((acc: number, item: TStoreItem) => {
+    ?.reduce((acc: number, item: TStoreItemSelect) => {
       return acc + parseFloat(item.cost)
     }, 0)
     .toFixed(2)
 
-  const expiringOneWeek = allStoreItems?.filter((item) => {
-    if (item.category === 'food') {
-      const expiryDate = new Date(item.dateExpiry)
-      const today = new Date()
-      const daysUntilExpiry = differenceInDays(expiryDate, today)
-      return daysUntilExpiry >= 0 && daysUntilExpiry <= 7
-    }
-    return false
+  const expiringOneWeek = allStoreItems?.filter((item: TData) => {
+    const daysLeft = differenceInDays(
+      new Date(item.dateExpiry),
+      new Date()
+    )
+    return daysLeft <= 7 && daysLeft >= 0
   })
-  const replaceOneMonth = allStoreItems?.filter((item) => {
-    if (item.category !== 'food') {
-      const expiryDate = new Date(item.dateExpiry)
-      const today = new Date()
-      const daysUntilExpiry = differenceInDays(expiryDate, today)
-      return daysUntilExpiry >= 0 && daysUntilExpiry <= 30
-    }
-    return false
+
+  const replaceOneMonth = allStoreItems?.filter((item: TData) => {
+    const daysLeft = differenceInDays(
+      new Date(item.dateExpiry),
+      new Date()
+    )
+    return daysLeft <= 30 && daysLeft > 7
   })
-  const expiredFoods = allStoreItems?.filter((item) => {
-    if (item.category === 'food') {
-      const expiryDate = new Date(item.dateExpiry)
-      const today = new Date()
-      const daysUntilExpiry = differenceInDays(expiryDate, today)
-      return daysUntilExpiry < 0
-    }
-    return false
+
+  const expiredFoods = allStoreItems?.filter((item: TData) => {
+    const daysLeft = differenceInDays(
+      new Date(item.dateExpiry),
+      new Date()
+    )
+    return daysLeft < 0
   })
-  console.log(expiredFoods)
+  // console.log(expiredFoods)
 
   // Add shared values for animations
   const animationProgress = useSharedValue(0)

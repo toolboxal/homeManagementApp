@@ -42,7 +42,7 @@ export const storeItems = sqliteTable('store_items', {
   status: text('status', {
     enum: ['active', 'consumed', 'disposed', 'deleted', 'recycled'],
   }).default('active'),
-  quantity: text('quantity').notNull().default('1'),
+  expired: int('expired', { mode: 'boolean' }).notNull().default(false),
   amount: text('amount', { enum: ['empty', 'low', 'half', 'full'] }).default(
     'full'
   ),
@@ -93,11 +93,6 @@ export const storeItemsInsertSchema = createInsertSchema(storeItems, {
     schema
       .min(1, { message: 'Name cannot be blank' })
       .max(40, { message: 'Exceeds max length' }),
-  quantity: (schema) =>
-    schema
-      .regex(/^[1-9]\d*$/, { message: 'Invalid quantity' })
-      .min(1, { message: 'Minimum 1 quantity' })
-      .default('1'),
   cost: (schema) =>
     schema.regex(/^(?:\d+(?:[.,]\d{0,2})?|[.,]\d{1,2})$/, {
       message: 'Invalid cost',
@@ -109,7 +104,6 @@ export const storeItemsInsertSchema = createInsertSchema(storeItems, {
   dateBought: true,
   dateExpiry: true,
   cost: true,
-  quantity: true,
   category: true,
   locationId: true,
   spotId: true,
