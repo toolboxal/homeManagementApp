@@ -22,7 +22,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   useSharedValue,
-  withTiming,
   interpolate,
 } from 'react-native-reanimated'
 
@@ -85,8 +84,8 @@ const IndexPage = () => {
         with: {
           location: true,
           spot: true,
-          direction: true
-        }
+          direction: true,
+        },
       })
     },
   })
@@ -109,11 +108,11 @@ const IndexPage = () => {
         with: {
           location: true,
           spot: true,
-          direction: true
-        }
+          direction: true,
+        },
       })
     },
-    placeholderData: (previousData) => previousData
+    placeholderData: (previousData) => previousData,
   })
 
   const recycledArr = storeItemsByStatusChange?.filter(

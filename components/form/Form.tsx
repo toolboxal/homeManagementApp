@@ -29,7 +29,7 @@ import { gray, primary, red } from '@/constants/colors'
 import { poppins, bitter, size } from '@/constants/fonts'
 import { add, format } from 'date-fns'
 import FormDateModal from './FormDateModal'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getTagOptions } from '@/db/seeding'
 import Chips from '../UI/FormChips'
 import PagerView from 'react-native-pager-view'
@@ -37,11 +37,17 @@ import { capitalize } from '@/utils/capitalize'
 import FormAddBtn from '../UI/FormAddLocBtn'
 import AddLocModal from './AddLocModal'
 import Entypo from '@expo/vector-icons/Entypo'
+import * as Haptics from 'expo-haptics'
+import { useRouter } from 'expo-router'
+import CustomToast from '../UI/CustomToast'
+import { toast } from 'sonner-native'
 
 const categoryArray = ['food', 'hygiene', 'supplies', 'miscellaneous'] as const
 type CategoryType = (typeof categoryArray)[number]
 
 const Form = () => {
+  const router = useRouter()
+  const queryClient = useQueryClient()
   const pagerRef = useRef<PagerView>(null)
   const today = new Date()
   const [categorySelect, setCategorySelect] = useState<CategoryType>(
@@ -105,6 +111,7 @@ const Form = () => {
 
   const onSubmit = async (data: z.infer<typeof storeItemsInsertSchema>) => {
     console.log(data)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
     try {
       // get location,spot,directions id from db
       const [locationResults, spotResults, directionResults] =
@@ -146,8 +153,11 @@ const Form = () => {
 
       // Step 4: Success handling (reset form, navigate, etc.)
       console.log('Item added successfully!')
+      toast.custom(<CustomToast message="Item saved to inventory" />)
       reset()
       pagerRef.current?.setPage(0)
+      queryClient.invalidateQueries({ queryKey: ['store_items'] })
+      router.replace('/inventoryPage')
     } catch (error) {
       console.error('Error adding item:', error)
     }
@@ -172,7 +182,10 @@ const Form = () => {
                         ? styles.catBoxSelect
                         : styles.catBox
                     }
-                    onPress={() => setCategorySelect(category)}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+                      setCategorySelect(category)
+                    }}
                   >
                     <Text
                       style={
@@ -304,7 +317,10 @@ const Form = () => {
               >
                 <Pressable
                   style={styles.nextBtn}
-                  onPress={() => pagerRef.current?.setPage(1)}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+                    pagerRef.current?.setPage(1)
+                  }}
                 >
                   <Entypo name="chevron-right" size={24} color={gray[50]} />
                 </Pressable>
@@ -453,7 +469,10 @@ const Form = () => {
         <View style={styles.navBtnsContainer}>
           <Pressable
             style={styles.nextBtn}
-            onPress={() => pagerRef.current?.setPage(0)}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+              pagerRef.current?.setPage(0)
+            }}
           >
             <Entypo name="chevron-left" size={24} color={gray[50]} />
           </Pressable>

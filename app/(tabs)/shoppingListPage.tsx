@@ -20,6 +20,7 @@ import { eq } from 'drizzle-orm'
 import * as ContextMenu from 'zeego/context-menu'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import { Trash2Icon } from 'lucide-react-native'
+import * as Haptics from 'expo-haptics'
 
 const shoppingListPage = () => {
   const [openAddNewItemModal, setOpenAddNewItemModal] = useState(false)
@@ -123,6 +124,7 @@ const shoppingListPage = () => {
                       }}
                       isChecked={Boolean(item.done)}
                       onPress={async (isChecked: boolean) => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
                         // Update the done status in the database
                         await db
                           .update(shoppingList)
@@ -166,6 +168,7 @@ const shoppingListPage = () => {
       <Pressable
         style={() => styles.addBtn}
         onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
           setMode('create')
           setOpenAddNewItemModal(true)
         }}

@@ -28,9 +28,9 @@ const ExpiryBar = ({ dateBought, dateExpiry, category }: Props) => {
 
   // Determine color based on progress
   const getProgressColor = () => {
-    if (progress >= 90) return gray[900]
-    if (progress >= 75) return gray[700]
-    if (progress >= 50) return gray[500]
+    if (progress >= 90) return primary[700]
+    if (progress >= 75) return primary[500]
+    if (progress >= 50) return primary[300]
     return gray[300]
   }
   //   console.log(elapsedDuration, totalDuration)

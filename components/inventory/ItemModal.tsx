@@ -28,6 +28,8 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Fontisto from '@expo/vector-icons/Fontisto'
 import { format } from 'date-fns'
+import * as Haptics from 'expo-haptics'
+import { Drumstick, Recycle, Trash2 } from 'lucide-react-native'
 
 type Props = {
   openItemModal: boolean
@@ -178,15 +180,17 @@ const ItemModal = ({
           <Pressable
             style={styles.optionBox}
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
               handleStatusChange('consumed', selectedItem!.id)
             }}
           >
-            <MaterialCommunityIcons name="cookie" size={25} color="white" />
+            <Drumstick color="white" size={25} strokeWidth={2} />
             <Text style={styles.optionTxt}>Consume</Text>
           </Pressable>
           <Pressable
             style={styles.optionBox}
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
               handleStatusChange('recycled', selectedItem!.id)
             }}
           >
@@ -196,10 +200,11 @@ const ItemModal = ({
           <Pressable
             style={styles.optionBox}
             onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
               handleStatusChange('disposed', selectedItem!.id)
             }}
           >
-            <Ionicons name="trash-bin" size={25} color="white" />
+            <Trash2 color="white" size={25} strokeWidth={2} />
             <Text style={styles.optionTxt}>Dispose</Text>
           </Pressable>
         </View>
@@ -274,6 +279,7 @@ const ItemModal = ({
                   onPress={async (isChecked: boolean) => {
                     // console.log(isChecked)
                     if (isChecked) {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                       await db.insert(shoppingList).values({
                         name: selectedItem?.name || '',
                       })
@@ -479,7 +485,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 70,
     height: 70,
-    backgroundColor: gray[400],
+    backgroundColor: primary[500],
   },
   optionTxt: { fontFamily: poppins.Medium, fontSize: size.xxs, color: 'white' },
 })

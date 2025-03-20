@@ -2,6 +2,7 @@ import { FlatList, Pressable, StyleSheet, Text } from 'react-native'
 import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { capitalize } from '@/utils/capitalize'
+import * as Haptics from 'expo-haptics'
 
 type Props = {
   roomList: { id: number; room: string }[] | undefined
@@ -28,7 +29,10 @@ const RoomListScroll = ({
                 selectedRoomId === item.id ? primary[400] : 'white',
             },
           ]}
-          onPress={() => setSelectedRoomId(item.id)}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+            setSelectedRoomId(item.id)
+          }}
         >
           <Text
             style={[

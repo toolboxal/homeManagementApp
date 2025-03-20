@@ -3,10 +3,16 @@ import { Tabs } from 'expo-router'
 import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { Home, Notebook, Plus, ShoppingBag, Trash } from 'lucide-react-native'
+import * as Haptics from 'expo-haptics'
 
 const TabsLayout = () => {
   return (
     <Tabs
+      screenListeners={{
+        tabPress: () => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+        },
+      }}
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
@@ -27,6 +33,7 @@ const TabsLayout = () => {
         name="index"
         options={{
           title: 'Home',
+
           tabBarIcon: ({ focused }) => (
             <Home
               size={26}

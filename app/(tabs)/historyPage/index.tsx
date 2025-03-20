@@ -139,12 +139,7 @@ const HistoryPage = () => {
       )}
 
       {groupedByStatus.length > 0 ? (
-        <Animated.View
-          style={styles.groupContainer}
-          entering={FadeInDown.springify()}
-          exiting={FadeOutUp.springify()}
-          layout={LinearTransition.springify()}
-        >
+        <View style={styles.groupContainer}>
           <Pressable
             style={styles.clearHistoryBox}
             onPress={() =>
@@ -228,14 +223,9 @@ const HistoryPage = () => {
               ))}
             </View>
           ))}
-        </Animated.View>
+        </View>
       ) : (
-        <Animated.View
-          style={styles.emptyState}
-          entering={FadeInDown.springify()}
-          exiting={FadeOutUp.springify()}
-          layout={LinearTransition.springify()}
-        >
+        <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>
             Inventory Items marked as consumed, recycled or disposed will appear
             here.
@@ -254,7 +244,7 @@ const HistoryPage = () => {
               <Text style={styles.iconLabel}>Disposed</Text>
             </View>
           </View>
-        </Animated.View>
+        </View>
       )}
     </ScrollView>
   )

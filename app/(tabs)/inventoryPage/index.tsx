@@ -1,22 +1,24 @@
 import { useMemo, useState, useEffect } from 'react'
 import { Stack } from 'expo-router'
-import { StyleSheet, Text, View, Pressable } from 'react-native'
+import {
+  StyleSheet,
+  Text,
+  View,
+  Pressable,
+  ScrollView,
+  RefreshControl,
+} from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
-import { locations, storeItems, TStoreItemSelect } from '@/db/schema'
+import { locations, TStoreItemSelect } from '@/db/schema'
 import { primary, gray, brown, green, red } from '@/constants/colors'
-import { bitter, oswald, poppins, size } from '@/constants/fonts'
+import { oswald, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
 import { asc } from 'drizzle-orm'
 import { differenceInDays, formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
-import Animated, {
-  FadeInDown,
-  FadeOutUp,
-  LinearTransition,
-} from 'react-native-reanimated'
 
 export type TData = TStoreItemSelect & {
   location: {
@@ -49,6 +51,7 @@ const InventoryPage = () => {
   const [openItemModal, setOpenItemModal] = useState<boolean>(false)
   const [selectedItem, setSelectedItem] = useState<TData | null>(null)
   const [searchBarQuery, setSearchBarQuery] = useState<string>('')
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data: roomList } = useQuery({
     queryKey: ['location', 'rooms'],
@@ -60,11 +63,21 @@ const InventoryPage = () => {
     // staleTime: 5 * 60 * 1000, // 5 minutes
   })
 
-  const { data: storeItemsList, isLoading } = useQuery({
+  const {
+    data: storeItemsList,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['store_items', selectedRoomId],
     queryFn: () => fetchStoreItems(selectedRoomId),
-    // staleTime: 5 * 60 * 1000, // 5 minutes
+    placeholderData: (previousData) => previousData,
   })
+
+  const onRefresh = async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }
 
   // Process the storeItemsList to group by location.room
   useEffect(() => {
@@ -130,10 +143,19 @@ const InventoryPage = () => {
   }
 
   return (
-    <Animated.ScrollView
+    <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
-      layout={LinearTransition.springify()}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={primary[500]}
+          colors={[primary[500]]}
+          progressBackgroundColor={primary[500]}
+          size={size.xs}
+        />
+      }
     >
       <Stack.Screen
         options={{
@@ -156,12 +178,7 @@ const InventoryPage = () => {
       />
 
       {groupedByLocation.length > 0 ? (
-        <Animated.View
-          style={styles.groupContainer}
-          entering={FadeInDown.springify()}
-          exiting={FadeOutUp.springify()}
-          layout={LinearTransition.springify()}
-        >
+        <View style={styles.groupContainer}>
           {groupedByLocation.map(([locationName, items]) => (
             <View key={locationName} style={styles.locationGroup}>
               <Text style={styles.locationHeader}>
@@ -247,23 +264,18 @@ const InventoryPage = () => {
               ))}
             </View>
           ))}
-        </Animated.View>
+        </View>
       ) : (
-        <Animated.View
-          style={styles.emptyState}
-          entering={FadeInDown.springify()}
-          exiting={FadeOutUp.springify()}
-          layout={LinearTransition.springify()}
-        >
+        <View style={styles.emptyState}>
           <Text style={styles.emptyStateText}>No items found</Text>
-        </Animated.View>
+        </View>
       )}
       <ItemModal
         selectedItem={selectedItem}
         openItemModal={openItemModal}
         setOpenItemModal={setOpenItemModal}
       />
-    </Animated.ScrollView>
+    </ScrollView>
   )
 }
 

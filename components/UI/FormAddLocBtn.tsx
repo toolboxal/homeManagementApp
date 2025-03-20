@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import { gray } from '@/constants/colors'
+import * as Haptics from 'expo-haptics'
 
 type Props = {
   setOpenAddNewLocModal: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,6 +16,7 @@ const FormAddBtn = ({ setOpenAddNewLocModal, setLocType, type }: Props) => {
     <Pressable
       style={styles.addBtn}
       onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
         setOpenAddNewLocModal(true)
         setLocType(type)
       }}
