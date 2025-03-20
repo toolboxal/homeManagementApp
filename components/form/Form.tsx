@@ -25,7 +25,7 @@ import {
 } from '@/db/schema'
 import db from '@/db/db'
 import { eq } from 'drizzle-orm'
-import { gray, blue, red } from '@/constants/colors'
+import { gray, primary, red } from '@/constants/colors'
 import { poppins, bitter, size } from '@/constants/fonts'
 import { add, format } from 'date-fns'
 import FormDateModal from './FormDateModal'
@@ -331,7 +331,7 @@ const Form = () => {
               {
                 fontFamily: bitter.SemiBold,
                 fontSize: size.xxl,
-                color: blue[600],
+                color: primary[600],
               },
             ]}
           >{`${capitalize(storeSelection.room)}`}</Text>
@@ -341,7 +341,7 @@ const Form = () => {
               {
                 fontFamily: bitter.Medium,
                 fontSize: size.lg,
-                color: blue[600],
+                color: primary[600],
               },
             ]}
           >{`${capitalize(storeSelection.direction)} ${capitalize(
@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
   formSpine: {
     width: '90%',
     margin: 'auto',
-    // backgroundColor: blue[100],
+    // backgroundColor: primary[100],
     flex: 1,
   },
   catContainer: {
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
   catBoxSelect: {
     width: '20%',
     aspectRatio: 1,
-    backgroundColor: blue[400],
+    backgroundColor: primary[400],
     borderRadius: 12,
     flex: 1,
     alignItems: 'center',
@@ -618,7 +618,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 30,
-    backgroundColor: blue[400],
+    backgroundColor: primary[400],
   },
   nextBtnTxt: {
     fontFamily: poppins.Regular,

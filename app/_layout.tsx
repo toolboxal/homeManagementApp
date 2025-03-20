@@ -68,6 +68,7 @@ export default function RootLayout() {
   const [dbReady, setDbReady] = useState(false)
   const [loaded, error] = useFonts({
     Poppins_400Regular_Italic,
+    Poppins_300Light,
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,

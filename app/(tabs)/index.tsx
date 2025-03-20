@@ -1,14 +1,14 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
-import { blue, gray, green, red } from '@/constants/colors'
+import { primary, gray, green, red } from '@/constants/colors'
 import { Recycle, Trash2 } from 'lucide-react-native'
 import { oswald, poppins, size } from '@/constants/fonts'
 import { startOfMonth, startOfYear, format, differenceInDays } from 'date-fns'
 import db from '@/db/db'
-import { storeItems, TStoreItemSelect } from '@/db/schema'
-import { and, eq, gte, lte } from 'drizzle-orm'
+import { storeItems } from '@/db/schema'
+import { and, gte, lte } from 'drizzle-orm'
 import {
   PiggyBank,
   Cookie,
@@ -94,13 +94,6 @@ const IndexPage = () => {
     }, 0)
     .toFixed(2)
 
-  // Calculate the date one week from now
-  // const oneWeekFromNow = new Date()
-  // oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7)
-  // const oneMonthFromNow = new Date()
-  // oneMonthFromNow.setDate(oneMonthFromNow.getDate() + 30)
-
-  // Find items expiring within the next week
   const expiringOneWeek = allStoreItems?.filter((item) => {
     if (item.category === 'food') {
       const expiryDate = new Date(item.dateExpiry)
@@ -275,7 +268,7 @@ const IndexPage = () => {
           </View>
 
           <View style={styles.figuresBox}>
-            <Cookie size={25} color={blue[400]} strokeWidth={2.5} />
+            <Cookie size={25} color={primary[400]} strokeWidth={2.5} />
             <Text style={styles.figureText}>
               {expiringOneWeek?.length || 0}
             </Text>
@@ -333,7 +326,7 @@ const styles = StyleSheet.create({
   headerTitleText: {
     fontFamily: oswald.Bold,
     fontSize: size.xxxl,
-    color: gray[950],
+    color: primary[600],
   },
   scrollContainer: {
     // backgroundColor: 'orange',
@@ -387,7 +380,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   selectedFilterButton: {
-    backgroundColor: blue[500],
+    backgroundColor: primary[400],
   },
   selectedFilterText: {
     color: 'white',

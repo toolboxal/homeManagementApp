@@ -11,7 +11,7 @@ import {
 import { Stack } from 'expo-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { storeItems, TStoreItemSelect } from '@/db/schema'
-import { blue, brown, gray, green, red } from '@/constants/colors'
+import { primary, brown, gray, green, red } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { fetchNonActiveItems } from '@/utils/fetchNonActiveItems'
 import Animated, {
@@ -36,7 +36,7 @@ const amountAlertColors = {
 }
 
 const statusHeaderEmoji: Record<string, React.ReactNode> = {
-  consumed: <Drumstick size={20} color={blue[500]} strokeWidth={2.5} />,
+  consumed: <Drumstick size={20} color={primary[500]} strokeWidth={2.5} />,
   recycled: <Recycle size={20} color={green[500]} strokeWidth={2.5} />,
   disposed: <Trash2 size={20} color={red[400]} strokeWidth={2.5} />,
   deleted: null,
@@ -134,7 +134,7 @@ const HistoryPage = () => {
       />
       {isLoading && (
         <View style={{ flex: 1 }}>
-          <ActivityIndicator size={'large'} color={blue[500]} />
+          <ActivityIndicator size={'large'} color={primary[500]} />
         </View>
       )}
 
@@ -179,28 +179,37 @@ const HistoryPage = () => {
                 <ContextMenu.Root key={item.id}>
                   <ContextMenu.Trigger>
                     <View key={item.id} style={styles.itemRow}>
-                      <Text style={styles.itemName}>{item.name}</Text>
-                      {/* <View
-                      style={{
-                        flex: 1,
-                        padding: 3,
-                        paddingHorizontal: 5,
-                        borderRadius: 2,
-                        backgroundColor: amountAlertColors[item.amount!],
-                      }}
-                    >
-                      <Text
-                        style={[
-                          styles.itemName,
-                          { fontSize: size.xxs, color: gray[700] },
-                        ]}
+                      <View
+                        style={{
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          gap: 2,
+                        }}
                       >
-                        {item.amount}
-                      </Text>
-                    </View> */}
+                        <Text style={styles.itemName}>{item.name}</Text>
+                        <View
+                          style={{
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: 3,
+                            paddingHorizontal: 5,
+                            borderRadius: 2,
+                            backgroundColor: amountAlertColors[item.amount!],
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.itemName,
+                              { fontSize: size.xxs, color: gray[700] },
+                            ]}
+                          >
+                            {item.amount}
+                          </Text>
+                        </View>
+                      </View>
                       <Text style={styles.dateStyle}>
-                        {'Purchased On: ' +
-                          format(item.dateBought, 'dd MMM yy')}
+                        {'Bought on: ' + format(item.dateBought, 'dd MMM yy')}
                       </Text>
                     </View>
                   </ContextMenu.Trigger>
@@ -233,7 +242,7 @@ const HistoryPage = () => {
           </Text>
           <View style={styles.emptyStateIcons}>
             <View style={styles.iconWithLabel}>
-              <Drumstick size={20} color={blue[500]} strokeWidth={2.5} />
+              <Drumstick size={20} color={primary[500]} strokeWidth={2.5} />
               <Text style={styles.iconLabel}>Consumed</Text>
             </View>
             <View style={styles.iconWithLabel}>
@@ -262,7 +271,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: poppins.Bold,
     fontSize: size.xl,
-    color: blue[900],
+    color: primary[900],
     marginBottom: 16,
   },
   groupContainer: {
@@ -287,15 +296,15 @@ const styles = StyleSheet.create({
   itemRow: {
     flex: 3,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: 'white',
     marginBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: gray[300],
+    // borderBottomWidth: 1,
+    // borderBottomColor: gray[300],
   },
   itemName: {
     fontFamily: poppins.Medium,
@@ -303,8 +312,8 @@ const styles = StyleSheet.create({
     color: gray[900],
   },
   dateStyle: {
-    fontFamily: poppins.Regular,
-    fontSize: size.xxs,
+    fontFamily: poppins.Light,
+    fontSize: 11,
   },
   emptyState: {
     padding: 24,

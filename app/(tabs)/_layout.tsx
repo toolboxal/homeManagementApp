@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Tabs } from 'expo-router'
-import { blue, gray } from '@/constants/colors'
+import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { Home, Notebook, Plus, ShoppingBag, Trash } from 'lucide-react-native'
 
@@ -18,8 +18,8 @@ const TabsLayout = () => {
           fontFamily: poppins.Medium,
           fontSize: size.xs,
         },
-        tabBarInactiveTintColor: gray[300],
-        tabBarActiveTintColor: gray[800],
+        tabBarInactiveTintColor: primary[300],
+        tabBarActiveTintColor: primary[800],
         tabBarShowLabel: false,
       }}
     >
@@ -28,7 +28,10 @@ const TabsLayout = () => {
         options={{
           title: 'Home',
           tabBarIcon: ({ focused }) => (
-            <Home size={26} color={`${focused ? gray[800] : gray[300]}`} />
+            <Home
+              size={26}
+              color={`${focused ? primary[800] : primary[300]}`}
+            />
           ),
         }}
       />
@@ -37,7 +40,10 @@ const TabsLayout = () => {
         options={{
           title: 'Inventory',
           tabBarIcon: ({ focused }) => (
-            <Notebook size={26} color={`${focused ? gray[800] : gray[300]}`} />
+            <Notebook
+              size={26}
+              color={`${focused ? primary[800] : primary[300]}`}
+            />
           ),
         }}
       />
@@ -52,11 +58,11 @@ const TabsLayout = () => {
                 height: 50,
                 justifyContent: 'center',
                 alignItems: 'center',
-                backgroundColor: gray[800],
+                backgroundColor: primary[900],
                 borderRadius: 100,
               }}
             >
-              <Plus size={24} color={gray[50]} strokeWidth={3} />
+              <Plus size={24} color={primary[50]} strokeWidth={3} />
             </View>
           ),
         }}
@@ -68,7 +74,7 @@ const TabsLayout = () => {
           tabBarIcon: ({ focused }) => (
             <ShoppingBag
               size={26}
-              color={`${focused ? gray[800] : gray[300]}`}
+              color={`${focused ? primary[800] : primary[300]}`}
             />
           ),
         }}
@@ -78,7 +84,10 @@ const TabsLayout = () => {
         options={{
           title: 'History',
           tabBarIcon: ({ focused }) => (
-            <Trash size={26} color={`${focused ? gray[800] : gray[300]}`} />
+            <Trash
+              size={26}
+              color={`${focused ? primary[800] : primary[300]}`}
+            />
           ),
         }}
       />

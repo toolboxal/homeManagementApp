@@ -1,4 +1,5 @@
 export const poppins = {
+  Light: 'Poppins_300Light',
   Regular: 'Poppins_400Regular',
   Medium: 'Poppins_500Medium',
   SemiBold: 'Poppins_600SemiBold',

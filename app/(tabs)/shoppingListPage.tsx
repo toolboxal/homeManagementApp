@@ -7,7 +7,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native'
-import { blue, gray, red } from '@/constants/colors'
+import { primary, gray, red } from '@/constants/colors'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
@@ -77,7 +77,7 @@ const shoppingListPage = () => {
                 )
               }
             >
-              <Trash2Icon size={24} color={red[500]} />
+              <Trash2Icon size={24} color={gray[500]} />
             </Pressable>
           ),
         }}
@@ -170,7 +170,7 @@ const shoppingListPage = () => {
           setOpenAddNewItemModal(true)
         }}
       >
-        <Ionicons name="add-outline" size={30} color={blue[300]} />
+        <Ionicons name="add-outline" size={30} color={primary[300]} />
       </Pressable>
       <AddShoppingItemModal
         openAddNewItemModal={openAddNewItemModal}
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: oswald.Bold,
     fontSize: size.xxxl,
-    color: gray[950],
+    color: primary[600],
   },
   noItemsBox: {
     flex: 1,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     width: 55,
     height: 55,
     borderRadius: 30,
-    backgroundColor: blue[600],
+    backgroundColor: primary[600],
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',

@@ -4,8 +4,8 @@ import { StyleSheet, Text, View, Pressable } from 'react-native'
 import { useQuery } from '@tanstack/react-query'
 import db from '@/db/db'
 import { locations, storeItems, TStoreItemSelect } from '@/db/schema'
-import { blue, gray, brown, green, red } from '@/constants/colors'
-import { bitter, poppins, size } from '@/constants/fonts'
+import { primary, gray, brown, green, red } from '@/constants/colors'
+import { bitter, oswald, poppins, size } from '@/constants/fonts'
 import RoomListScroll from '@/components/inventory/RoomListScroll'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
 import { capitalize } from '@/utils/capitalize'
@@ -170,7 +170,13 @@ const InventoryPage = () => {
               {items.map((item, itemIndex) => (
                 <Pressable
                   key={item.id}
-                  style={styles.itemRow}
+                  style={[
+                    styles.itemRow,
+                    (calcDaysLeft(item.dateExpiry, item.category!) ===
+                      'Expired' ||
+                      calcDaysLeft(item.dateExpiry, item.category!) ===
+                        'Time to replace') && { backgroundColor: red[100] },
+                  ]}
                   onPress={() => {
                     setSelectedItem(item)
                     setOpenItemModal(true)
@@ -203,7 +209,7 @@ const InventoryPage = () => {
                         (calcDaysLeft(item.dateExpiry, item.category!) ===
                           'Expired' ||
                           calcDaysLeft(item.dateExpiry, item.category!) ===
-                            'Time to replace') && { color: red[400] },
+                            'Time to replace') && { color: red[500] },
                       ]}
                     >
                       {calcDaysLeft(item.dateExpiry, item.category!)}
@@ -223,7 +229,7 @@ const InventoryPage = () => {
                     <Text
                       style={[
                         styles.itemName,
-                        { fontSize: size.xs, color: blue[600] },
+                        { fontSize: size.xs, color: primary[600] },
                       ]}
                     >
                       {item.direction?.direction || 'Unassigned'}
@@ -231,7 +237,7 @@ const InventoryPage = () => {
                     <Text
                       style={[
                         styles.itemName,
-                        { fontSize: size.xs, color: blue[600] },
+                        { fontSize: size.xs, color: primary[600] },
                       ]}
                     >
                       {item.spot?.spot || 'Unassigned'}
@@ -272,26 +278,23 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: poppins.Bold,
     fontSize: size.xl,
-    color: blue[900],
-    marginBottom: 16,
+    color: primary[900],
+    // marginBottom: 16,
   },
   groupContainer: {
     marginTop: 10,
   },
   locationGroup: {
-    marginBottom: 20,
-
-    // borderColor: 'red',
-    // borderWidth: 1,
+    marginBottom: 12,
   },
   locationHeader: {
-    fontFamily: bitter.SemiBold,
-    fontSize: size.xl,
-    color: blue[600],
+    fontFamily: oswald.Regular,
+    fontSize: 24,
+    color: primary[600],
     paddingVertical: 8,
     // borderBottomWidth: 1,
-    // borderBottomColor: blue[300],
-    marginBottom: 1,
+    // borderBottomColor: primary[300],
+    // marginBottom: 1,
   },
   itemRow: {
     flex: 3,
@@ -301,7 +304,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 8,
     backgroundColor: 'white',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   itemName: {
     fontFamily: poppins.Medium,

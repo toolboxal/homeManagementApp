@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { blue, gray, green, red } from '@/constants/colors'
+import { primary, gray, green, red } from '@/constants/colors'
 import {
   StyleSheet,
   Text,
@@ -261,10 +261,10 @@ const ItemModal = ({
               <View style={[styles.checkboxBox]}>
                 <BouncyCheckbox
                   size={23}
-                  fillColor={blue[600]}
+                  fillColor={primary[600]}
                   unFillColor="#FFFFFF"
                   text="To buy again?"
-                  iconStyle={{ borderColor: blue[600] }}
+                  iconStyle={{ borderColor: primary[600] }}
                   innerIconStyle={{ borderWidth: 1 }}
                   textStyle={{
                     fontFamily: poppins.Regular,
@@ -321,7 +321,7 @@ const ItemModal = ({
                     {
                       fontFamily: bitter.Medium,
                       fontSize: size.sm,
-                      color: blue[600],
+                      color: primary[600],
                     },
                   ]}
                 >{`${capitalize(storeSelection.room)}, ${capitalize(
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
   sliderTxt: {
     fontFamily: poppins.Bold,
     fontSize: size.md,
-    color: blue[600],
+    color: primary[600],
   },
   checkboxBox: {
     width: '50%',

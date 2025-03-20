@@ -1,5 +1,5 @@
 import { FlatList, Pressable, StyleSheet, Text } from 'react-native'
-import { blue, gray } from '@/constants/colors'
+import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { capitalize } from '@/utils/capitalize'
 
@@ -24,12 +24,20 @@ const RoomListScroll = ({
           style={[
             styles.roomChip,
             {
-              backgroundColor: selectedRoomId === item.id ? blue[300] : 'white',
+              backgroundColor:
+                selectedRoomId === item.id ? primary[400] : 'white',
             },
           ]}
           onPress={() => setSelectedRoomId(item.id)}
         >
-          <Text style={styles.roomChipTxt}>{capitalize(item.room)}</Text>
+          <Text
+            style={[
+              styles.roomChipTxt,
+              { color: selectedRoomId === item.id ? 'white' : primary[400] },
+            ]}
+          >
+            {capitalize(item.room)}
+          </Text>
         </Pressable>
       )}
       //   keyExtractor={(item) => item.id.toString()}
@@ -56,6 +64,6 @@ const styles = StyleSheet.create({
   roomChipTxt: {
     fontFamily: poppins.Regular,
     fontSize: size.sm,
-    color: blue[900],
+    color: primary[900],
   },
 })

@@ -1,4 +1,4 @@
-import { blue, gray } from '@/constants/colors'
+import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { StyleSheet, Text, View } from 'react-native'
 
@@ -25,6 +25,6 @@ const styles = StyleSheet.create({
   toastText: {
     fontFamily: poppins.Regular,
     fontSize: size.sm,
-    color: blue[200],
+    color: primary[200],
   },
 })

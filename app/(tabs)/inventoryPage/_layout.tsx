@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { Stack } from 'expo-router'
-import { blue, gray } from '@/constants/colors'
+import { primary, gray } from '@/constants/colors'
 import { oswald, poppins, size } from '@/constants/fonts'
 const InventoryLayout = () => {
   return (
@@ -14,7 +14,7 @@ const InventoryLayout = () => {
           headerSearchBarOptions: {
             placeholder: 'Search inventory',
             barTintColor: 'white',
-            tintColor: blue[500],
+            tintColor: primary[600],
           },
           headerStyle: {
             backgroundColor: gray[50],
@@ -22,10 +22,12 @@ const InventoryLayout = () => {
           headerTitleStyle: {
             fontFamily: oswald.Regular,
             fontSize: size.lg,
+            color: primary[600],
           },
           headerLargeTitleStyle: {
             fontFamily: oswald.SemiBold,
             fontSize: size.xxxl,
+            color: primary[600],
           },
           headerShadowVisible: false,
         }}

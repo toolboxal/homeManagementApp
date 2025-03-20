@@ -1,4 +1,4 @@
-import { blue, gray } from '@/constants/colors'
+import { primary, gray } from '@/constants/colors'
 import {
   StyleSheet,
   Text,
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     padding: 12,
-    backgroundColor: gray[900],
+    backgroundColor: gray[700],
     borderRadius: 10,
     marginBottom: 8,
     flexDirection: 'row',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   itemDetail: {
     fontFamily: poppins.Medium,
     fontSize: size.xs,
-    color: blue[300],
+    color: primary[200],
     // marginBottom: 2,
   },
   emptyText: {

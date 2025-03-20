@@ -1,6 +1,6 @@
 import { StyleSheet, Pressable, View, Modal } from 'react-native'
 import DateTimePicker from '@react-native-community/datetimepicker'
-import { gray, blue } from '@/constants/colors'
+import { gray, primary } from '@/constants/colors'
 import { add } from 'date-fns'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
@@ -41,12 +41,12 @@ const FormDateModal = ({
             onPress={() => setOpenDateModal(false)}
             style={styles.closeBtn}
           >
-            <Ionicons name="close-sharp" size={26} color={blue[800]} />
+            <Ionicons name="close-sharp" size={26} color={primary[800]} />
           </Pressable>
           <DateTimePicker
             mode="date"
             display="inline"
-            accentColor={blue[800]}
+            accentColor={primary[800]}
             minimumDate={dateOption === 1 ? today : dateBought}
             maximumDate={
               dateOption === 1 ? dateExpiry : add(new Date(), { years: 10 })

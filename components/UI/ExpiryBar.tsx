@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { format, differenceInDays, parseISO } from 'date-fns'
-import { gray, red, green, blue } from '@/constants/colors'
+import { gray, red, green, primary } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 
 type Props = {
