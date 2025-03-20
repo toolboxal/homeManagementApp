@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
@@ -18,7 +18,32 @@ import {
 } from 'lucide-react-native'
 import DashBoardModal from '@/components/dashboard/DashBoardModal'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
-import { TData } from './inventoryPage'
+import Animated, {
+  useAnimatedStyle,
+  withSpring,
+  useSharedValue,
+  withTiming,
+  interpolate,
+} from 'react-native-reanimated'
+
+type TStoreItem = {
+  id: number
+  name: string
+  dateBought: string
+  dateExpiry: string
+  dateStatusChange: string
+  cost: string
+  status: 'active' | 'consumed' | 'disposed' | 'deleted' | 'recycled' | null
+  quantity: string
+  amount: 'empty' | 'low' | 'half' | 'full' | null
+  category: 'food' | 'hygiene' | 'supplies' | 'miscellaneous' | null
+  locationId: number | null
+  spotId: number | null
+  directionId: number | null
+  location: { id: number; room: string } | null
+  spot: { id: number; spot: string } | null
+  direction: { id: number; direction: string } | null
+}
 
 const IndexPage = () => {
   const [selectedDateRange, setSelectedDateRange] = useState({
@@ -27,7 +52,7 @@ const IndexPage = () => {
   })
   const [tabSelected, setTabSelected] = useState('month')
   const [openItemModal, setOpenItemModal] = useState(false)
-  const [modalDataFeed, setModalDataFeed] = useState<TData[] | null>(null)
+  const [modalDataFeed, setModalDataFeed] = useState<TStoreItem[] | null>(null)
   const [modalInfo, setModalInfo] = useState<{
     headerText: string
     description: string
@@ -42,8 +67,8 @@ const IndexPage = () => {
       return await fetchStoreItems()
     },
   })
-  console.log(allStoreItems)
-  const { data: storeItemsByDateBought } = useQuery({
+  // console.log(allStoreItems)
+  const { data: storeItemsByDateBought } = useQuery<TStoreItem[], Error>({
     queryKey: [
       'store_items_date_bought',
       selectedDateRange.startDate,
@@ -57,12 +82,17 @@ const IndexPage = () => {
           gte(storeItems.dateBought, startDateStr),
           lte(storeItems.dateBought, endDateStr)
         ),
+        with: {
+          location: true,
+          spot: true,
+          direction: true
+        }
       })
     },
   })
   // console.log(storeItemsByDateBought)
 
-  const { data: storeItemsByStatusChange } = useQuery({
+  const { data: storeItemsByStatusChange } = useQuery<TStoreItem[], Error>({
     queryKey: [
       'store_items_status_change',
       selectedDateRange.startDate,
@@ -76,8 +106,14 @@ const IndexPage = () => {
           gte(storeItems.dateStatusChange, startDateStr),
           lte(storeItems.dateStatusChange, endDateStr)
         ),
+        with: {
+          location: true,
+          spot: true,
+          direction: true
+        }
       })
     },
+    placeholderData: (previousData) => previousData
   })
 
   const recycledArr = storeItemsByStatusChange?.filter(
@@ -89,8 +125,8 @@ const IndexPage = () => {
   const recycledWastage = recycledArr?.filter((item) => item.amount !== 'empty')
   const disposedWastage = disposedArr?.filter((item) => item.amount !== 'empty')
   const totalSpent = storeItemsByDateBought
-    ?.reduce((acc, item) => {
-      return acc + parseFloat(item.cost || '0')
+    ?.reduce((acc: number, item: TStoreItem) => {
+      return acc + parseFloat(item.cost)
     }, 0)
     .toFixed(2)
 
@@ -122,6 +158,45 @@ const IndexPage = () => {
     return false
   })
   console.log(expiredFoods)
+
+  // Add shared values for animations
+  const animationProgress = useSharedValue(0)
+
+  // Create reusable animated component
+  const AnimatedFigure = ({
+    value,
+  }: {
+    value: string | number | undefined
+  }) => {
+    const animatedStyles = useAnimatedStyle(() => {
+      return {
+        transform: [
+          {
+            translateY: interpolate(animationProgress.value, [0, 1], [7, 0]),
+          },
+        ],
+        opacity: interpolate(animationProgress.value, [0, 1], [0, 1]),
+      }
+    })
+
+    return (
+      <Animated.Text style={[styles.figureText, animatedStyles]}>
+        {value}
+      </Animated.Text>
+    )
+  }
+
+  // Trigger animation when tab changes
+  useEffect(() => {
+    animationProgress.value = withSpring(1, {
+      damping: 20,
+      mass: 2,
+    })
+
+    return () => {
+      animationProgress.value = 0
+    }
+  }, [tabSelected])
 
   return (
     <SafeAreaView
@@ -185,15 +260,14 @@ const IndexPage = () => {
           </Text>
           <View style={styles.figuresBox}>
             <PiggyBank size={25} color={gray[700]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>{totalSpent}</Text>
+            <AnimatedFigure value={totalSpent} />
           </View>
         </View>
         <View style={styles.infoBox}>
           <Text style={styles.infoTitle}>Recycled</Text>
           <View style={styles.figuresBox}>
             <Recycle size={25} color={green[300]} strokeWidth={2.5} />
-
-            <Text style={styles.figureText}>{recycledArr?.length || 0}</Text>
+            <AnimatedFigure value={recycledArr?.length || 0} />
           </View>
           <Text style={styles.infoText}>
             {recycledWastage?.length === 0
@@ -205,12 +279,12 @@ const IndexPage = () => {
           <Text style={styles.infoTitle}>Disposed</Text>
           <View style={styles.figuresBox}>
             <Trash2 size={25} color={red[300]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>{disposedArr?.length || 0}</Text>
+            <AnimatedFigure value={disposedArr?.length || 0} />
           </View>
           <Text style={styles.infoText}>
             {disposedWastage?.length === 0
               ? 'Good Job! There are no wastage.'
-              : 'Some disposed items has leftovers. What would you change to do better next time?'}
+              : 'Some leftovers found in disposed items. 😔'}
           </Text>
         </View>
         <Pressable
@@ -242,7 +316,7 @@ const IndexPage = () => {
           </View>
           <View style={styles.figuresBox}>
             <OctagonAlert size={25} color={red[600]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>{expiredFoods?.length || 0}</Text>
+            <AnimatedFigure value={expiredFoods?.length || 0} />
           </View>
         </Pressable>
         <Pressable
@@ -269,9 +343,7 @@ const IndexPage = () => {
 
           <View style={styles.figuresBox}>
             <Cookie size={25} color={primary[400]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>
-              {expiringOneWeek?.length || 0}
-            </Text>
+            <AnimatedFigure value={expiringOneWeek?.length || 0} />
           </View>
         </Pressable>
 
@@ -299,9 +371,7 @@ const IndexPage = () => {
 
           <View style={styles.figuresBox}>
             <BatteryLow size={25} color={gray[400]} strokeWidth={2.5} />
-            <Text style={styles.figureText}>
-              {replaceOneMonth?.length || 0}
-            </Text>
+            <AnimatedFigure value={replaceOneMonth?.length || 0} />
           </View>
         </Pressable>
         <DashBoardModal
