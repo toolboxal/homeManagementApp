@@ -1,19 +1,18 @@
-import { useState, useEffect, useRef } from 'react'
-import { primary, gray, green, red } from '@/constants/colors'
+import { useState, useEffect } from 'react'
+import { primary, gray } from '@/constants/colors'
 import {
   StyleSheet,
   Text,
   View,
   Modal,
   Pressable,
-  ScrollView,
+  FlatList,
 } from 'react-native'
 import { TData } from '@/app/(tabs)/inventoryPage'
 import { bitter, poppins, size } from '@/constants/fonts'
 import Slider from '@react-native-community/slider'
 import MaterialIcons from '@expo/vector-icons/MaterialIcons'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
-import PagerView from 'react-native-pager-view'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getTagOptions } from '@/db/seeding'
 import Chips from '../UI/FormChips'
@@ -24,8 +23,6 @@ import { eq } from 'drizzle-orm'
 import ExpiryBar from '../UI/ExpiryBar'
 import { toast } from 'sonner-native'
 import CustomToast from '../UI/CustomToast'
-import Ionicons from '@expo/vector-icons/Ionicons'
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Fontisto from '@expo/vector-icons/Fontisto'
 import { format } from 'date-fns'
 import * as Haptics from 'expo-haptics'
@@ -60,7 +57,7 @@ const ItemModal = ({
       ? 2
       : 1
   }
-  // console.log(selectedItem)
+
   const [sliderValue, setSliderValue] = useState(
     getSliderValueFromAmount(selectedItem?.amount)
   )
@@ -71,9 +68,7 @@ const ItemModal = ({
     direction: selectedItem?.direction?.direction || 'top',
   })
   const [currentPage, setCurrentPage] = useState(0)
-  const pagerRef = useRef<PagerView>(null)
-  // console.log(sliderValue)
-  // Reset slider value when selectedItem changes or modal opens/closes
+
   useEffect(() => {
     if (openItemModal && selectedItem) {
       setSliderValue(getSliderValueFromAmount(selectedItem.amount))
@@ -83,6 +78,7 @@ const ItemModal = ({
         spot: selectedItem.spot?.spot || 'cabinet',
         direction: selectedItem.direction?.direction || 'top',
       })
+      setCurrentPage(0)
     }
   }, [selectedItem, openItemModal])
 
@@ -96,7 +92,6 @@ const ItemModal = ({
   const spotsSorted = tags?.allSpots
     ? [...tags.allSpots].sort((a, b) => a.spot.localeCompare(b.spot))
     : []
-
   const directionsSorted = tags?.allDirections
     ? [...tags.allDirections].sort((a, b) =>
         a.direction.localeCompare(b.direction)
@@ -108,7 +103,6 @@ const ItemModal = ({
   const updateItemMutation = useMutation({
     mutationFn: async () => {
       if (!selectedItem?.id) return
-
       const amountValue = amount[sliderValue]
       if (!amountValue) return
 
@@ -158,6 +152,175 @@ const ItemModal = ({
     setOpenItemModal(false)
   }
 
+  // Data structure for FlatList
+  const locationData = [
+    {
+      title: 'ROOM',
+      items: roomsSorted,
+      category: 'room',
+      currentSelection: storeSelection.room,
+    },
+    {
+      title: 'SPOT',
+      items: spotsSorted,
+      category: 'spot',
+      currentSelection: storeSelection.spot,
+    },
+    {
+      title: 'EXACTLY WHERE',
+      items: directionsSorted,
+      category: 'direction',
+      currentSelection: storeSelection.direction,
+    },
+  ]
+
+  // Render item for FlatList
+  const renderLocationSection = ({ item }: { item: any }) => (
+    <View style={styles.locationContainer}>
+      <Text style={styles.locationQn}>{item.title}</Text>
+      <View style={styles.chipsContainer}>
+        {item.items.map((loc: any) => (
+          <Chips
+            locationObj={loc}
+            key={loc.id}
+            storeSelection={item.currentSelection}
+            setStoreSelection={setstoreSelection}
+            category={item.category}
+          />
+        ))}
+      </View>
+    </View>
+  )
+
+  // Render the current page content
+  const renderPageContent = () => {
+    if (currentPage === 0) {
+      return (
+        <View style={{ flex: 1 }}>
+          <View style={styles.topBar}>
+            <Text style={styles.itemName}>{selectedItem?.name}</Text>
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center' }}
+              onPress={() => setCurrentPage(1)}
+            >
+              <Text
+                style={{
+                  fontFamily: poppins.Regular,
+                  fontSize: size.xs,
+                  color: gray[900],
+                }}
+              >
+                storage location
+              </Text>
+              <MaterialIcons name="chevron-right" size={24} color={gray[900]} />
+            </Pressable>
+          </View>
+          <ExpiryBar
+            dateBought={selectedItem?.dateBought}
+            dateExpiry={selectedItem?.dateExpiry}
+            category={selectedItem?.category || 'food'}
+          />
+          <View style={styles.sliderBox}>
+            <Text style={styles.sliderQn}>
+              How much {selectedItem?.name} is left?
+            </Text>
+            <Text style={styles.sliderTxt}>{amount[sliderValue]}</Text>
+            <Slider
+              minimumValue={1}
+              maximumValue={4}
+              step={1}
+              value={sliderValue}
+              minimumTrackTintColor={gray[900]}
+              maximumTrackTintColor={gray[100]}
+              tapToSeek={true}
+              style={styles.slider}
+              onValueChange={(value) => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                setSliderValue(value)
+              }}
+              thumbTintColor={'white'}
+            />
+          </View>
+          <View style={[styles.checkboxBox]}>
+            <BouncyCheckbox
+              size={23}
+              fillColor={primary[600]}
+              unFillColor="#FFFFFF"
+              text="To buy again?"
+              iconStyle={{ borderColor: primary[600] }}
+              innerIconStyle={{ borderWidth: 1 }}
+              textStyle={{
+                fontFamily: poppins.Regular,
+                fontSize: size.sm,
+                textDecorationLine: 'none',
+              }}
+              onPress={async (isChecked: boolean) => {
+                if (isChecked) {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                  await db.insert(shoppingList).values({
+                    name: selectedItem?.name || '',
+                  })
+                  queryClient.invalidateQueries({
+                    queryKey: ['shoppingList'],
+                  })
+                  toast.custom(
+                    <CustomToast message="Item added to shopping list" />
+                  )
+                  setChecked(!isChecked)
+                } else {
+                  setChecked(!isChecked)
+                }
+              }}
+            />
+          </View>
+        </View>
+      )
+    } else if (currentPage === 1) {
+      return (
+        <View style={{ flex: 1 }}>
+          <View style={styles.topBar}>
+            <Pressable
+              style={{ flexDirection: 'row', alignItems: 'center' }}
+              onPress={() => setCurrentPage(0)}
+            >
+              <MaterialIcons name="chevron-left" size={24} color={gray[900]} />
+              <Text
+                style={{
+                  fontFamily: poppins.Regular,
+                  fontSize: size.xs,
+                  color: gray[900],
+                }}
+              >
+                back
+              </Text>
+            </Pressable>
+            <Text
+              style={[
+                styles.locationQn,
+                {
+                  fontFamily: bitter.Medium,
+                  fontSize: size.sm,
+                  color: primary[600],
+                },
+              ]}
+            >{`${capitalize(storeSelection.room)}, ${capitalize(
+              storeSelection.direction
+            )} ${capitalize(storeSelection.spot)}`}</Text>
+          </View>
+          <FlatList
+            data={locationData}
+            renderItem={renderLocationSection}
+            keyExtractor={(item) => item.title}
+            showsVerticalScrollIndicator={false}
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingBottom: 20 }}
+          />
+        </View>
+      )
+    }
+    return null
+  }
+
   return (
     <Modal
       animationType="fade"
@@ -168,7 +331,6 @@ const ItemModal = ({
       <Pressable style={styles.overlay} onPress={handleClose}>
         <View
           style={{
-            // backgroundColor: 'yellow',
             width: '92%',
             marginBottom: 12,
             flexDirection: 'row',
@@ -212,196 +374,15 @@ const ItemModal = ({
           onPress={(e) => e.stopPropagation()}
           style={[styles.modalBox]}
         >
-          <PagerView ref={pagerRef} initialPage={0} style={{ flex: 1 }}>
-            <View key={1}>
-              <View style={styles.topBar}>
-                <Text style={styles.itemName}>{selectedItem?.name}</Text>
-                <Pressable
-                  style={{ flexDirection: 'row', alignItems: 'center' }}
-                  onPress={() => {
-                    pagerRef.current?.setPage(1)
-                    setCurrentPage(1)
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontFamily: poppins.Regular,
-                      fontSize: size.xs,
-                      color: gray[900],
-                    }}
-                  >
-                    storage location
-                  </Text>
-                  <MaterialIcons
-                    name="chevron-right"
-                    size={24}
-                    color={gray[900]}
-                  />
-                </Pressable>
-              </View>
-              <ExpiryBar
-                dateBought={selectedItem?.dateBought}
-                dateExpiry={selectedItem?.dateExpiry}
-                category={selectedItem?.category || 'food'}
-              />
-              <View style={styles.sliderBox}>
-                <Text style={styles.sliderQn}>
-                  How much {selectedItem?.name} is left?
-                </Text>
-                <Text style={styles.sliderTxt}>{amount[sliderValue]}</Text>
-                <Slider
-                  minimumValue={1}
-                  maximumValue={4}
-                  step={1}
-                  value={sliderValue}
-                  minimumTrackTintColor={gray[900]}
-                  maximumTrackTintColor={gray[100]}
-                  tapToSeek={true}
-                  style={styles.slider}
-                  onValueChange={(value) => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-                    setSliderValue(value)
-                  }}
-                  thumbTintColor={'white'}
-                />
-              </View>
-
-              <View style={[styles.checkboxBox]}>
-                <BouncyCheckbox
-                  size={23}
-                  fillColor={primary[600]}
-                  unFillColor="#FFFFFF"
-                  text="To buy again?"
-                  iconStyle={{ borderColor: primary[600] }}
-                  innerIconStyle={{ borderWidth: 1 }}
-                  textStyle={{
-                    fontFamily: poppins.Regular,
-                    fontSize: size.sm,
-                    textDecorationLine: 'none',
-                  }}
-                  onPress={async (isChecked: boolean) => {
-                    // console.log(isChecked)
-                    if (isChecked) {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-                      await db.insert(shoppingList).values({
-                        name: selectedItem?.name || '',
-                      })
-                      queryClient.invalidateQueries({
-                        queryKey: ['shoppingList'],
-                      })
-                      toast.custom(
-                        <CustomToast message="Item added to shopping list" />
-                      )
-                      setChecked(!isChecked)
-                    } else {
-                      setChecked(!isChecked)
-                    }
-                  }}
-                />
-              </View>
-            </View>
-            <View key={2}>
-              <View style={styles.topBar}>
-                <Pressable
-                  style={{ flexDirection: 'row', alignItems: 'center' }}
-                  onPress={() => {
-                    pagerRef.current?.setPage(0)
-                    setCurrentPage(0)
-                  }}
-                >
-                  <MaterialIcons
-                    name="chevron-left"
-                    size={24}
-                    color={gray[900]}
-                  />
-                  <Text
-                    style={{
-                      fontFamily: poppins.Regular,
-                      fontSize: size.xs,
-                      color: gray[900],
-                    }}
-                  >
-                    back
-                  </Text>
-                </Pressable>
-                <Text
-                  style={[
-                    styles.locationQn,
-                    {
-                      fontFamily: bitter.Medium,
-                      fontSize: size.sm,
-                      color: primary[600],
-                    },
-                  ]}
-                >{`${capitalize(storeSelection.room)}, ${capitalize(
-                  storeSelection.direction
-                )} ${capitalize(storeSelection.spot)}`}</Text>
-              </View>
-              <ScrollView
-                showsVerticalScrollIndicator={false}
-                style={{ flex: 1, maxHeight: '85%' }}
-                contentContainerStyle={{ paddingBottom: 20 }}
-              >
-                <View style={styles.locationContainer}>
-                  <Text style={styles.locationQn}>ROOM</Text>
-
-                  <View style={styles.chipsContainer}>
-                    {roomsSorted.map((room) => {
-                      return (
-                        <Chips
-                          locationObj={room}
-                          key={room.id}
-                          storeSelection={storeSelection.room}
-                          setStoreSelection={setstoreSelection}
-                          category={'room'}
-                        />
-                      )
-                    })}
-                  </View>
-                </View>
-                <View style={styles.locationContainer}>
-                  <Text style={styles.locationQn}>SPOT</Text>
-
-                  <View style={styles.chipsContainer}>
-                    {spotsSorted.map((spot) => {
-                      return (
-                        <Chips
-                          locationObj={spot}
-                          key={spot.id}
-                          storeSelection={storeSelection.spot}
-                          setStoreSelection={setstoreSelection}
-                          category={'spot'}
-                        />
-                      )
-                    })}
-                  </View>
-                </View>
-                <View style={styles.locationContainer}>
-                  <Text style={styles.locationQn}>EXACTLY WHERE</Text>
-
-                  <View style={styles.chipsContainer}>
-                    {directionsSorted.map((direction) => {
-                      return (
-                        <Chips
-                          locationObj={direction}
-                          key={direction.id}
-                          storeSelection={storeSelection.direction}
-                          setStoreSelection={setstoreSelection}
-                          category={'direction'}
-                        />
-                      )
-                    })}
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
-          </PagerView>
+          {renderPageContent()}
         </Pressable>
       </Pressable>
     </Modal>
   )
 }
+
 export default ItemModal
+
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
@@ -433,7 +414,6 @@ const styles = StyleSheet.create({
     color: gray[900],
   },
   sliderBox: {
-    // backgroundColor: 'yellow',
     flexDirection: 'column',
     alignItems: 'flex-start',
     marginTop: 15,
@@ -464,21 +444,13 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   locationContainer: {
-    flex: 1,
     marginTop: 10,
-    // backgroundColor: 'orange',
   },
   locationQn: {
     fontFamily: bitter.Bold,
     fontSize: size.md,
     color: gray[700],
     marginBottom: 8,
-  },
-  locationLabelContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: 7,
-    marginBottom: 5,
   },
   chipsContainer: {
     flexDirection: 'row',
