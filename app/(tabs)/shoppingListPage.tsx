@@ -52,7 +52,7 @@ const shoppingListPage = () => {
           headerTitle: '',
           headerShadowVisible: false,
           headerStyle: {
-            backgroundColor: gray[50],
+            backgroundColor: primary[50],
           },
           headerRight: () => (
             <Pressable
@@ -110,8 +110,8 @@ const shoppingListPage = () => {
                     <BouncyCheckbox
                       text={item.name}
                       size={25}
-                      fillColor={gray[500]}
-                      unFillColor={gray[50]}
+                      fillColor={primary[500]}
+                      unFillColor={primary[50]}
                       iconStyle={{
                         borderColor: gray[500],
                       }}
@@ -190,7 +190,7 @@ export default shoppingListPage
 const styles = StyleSheet.create({
   pageLayout: {
     flex: 1,
-    backgroundColor: gray[50],
+    backgroundColor: primary[50],
     position: 'relative',
   },
   scrollContainer: {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     height: 60,
     marginBottom: 10,
     paddingLeft: 10,
-    backgroundColor: gray[50],
+    backgroundColor: primary[50],
     paddingTop: 10,
   },
   title: {

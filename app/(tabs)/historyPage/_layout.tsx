@@ -17,7 +17,7 @@ const InventoryLayout = () => {
             tintColor: primary[600],
           },
           headerStyle: {
-            backgroundColor: gray[50],
+            backgroundColor: primary[50],
           },
           headerTitleStyle: {
             fontFamily: oswald.Regular,

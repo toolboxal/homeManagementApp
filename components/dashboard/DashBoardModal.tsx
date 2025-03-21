@@ -41,7 +41,10 @@ const DashBoardModal = ({
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>{title}</Text>
           <Text style={styles.modalDescription}>{description}</Text>
-          <ScrollView style={styles.scrollContainer}>
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
             {modalDataFeed && modalDataFeed.length > 0 ? (
               modalDataFeed.map((item) => (
                 <View key={item.id} style={styles.itemContainer}>
@@ -123,7 +126,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 2,
-    color: gray[50],
+    color: primary[50],
     paddingLeft: 10,
   },
   modalDescription: {
@@ -135,6 +138,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+    borderRadius: 10,
   },
   itemContainer: {
     padding: 12,

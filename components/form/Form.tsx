@@ -165,7 +165,7 @@ const Form = () => {
     <PagerView
       ref={pagerRef}
       initialPage={0}
-      style={{ flex: 1, backgroundColor: gray[50] }}
+      style={{ flex: 1, backgroundColor: primary[50] }}
     >
       <View key={1} style={{ flex: 1, paddingTop: 50 }}>
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -216,28 +216,7 @@ const Form = () => {
                   </View>
                 )}
               />
-              {/* <Controller
-                name="quantity"
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <View style={styles.textInputBox}>
-                    <TextInput
-                      onChangeText={onChange}
-                      value={value?.toString() || ''}
-                      onBlur={onBlur}
-                      style={styles.textInput}
-                      placeholder="Quantity"
-                      placeholderTextColor={gray[400]}
-                      keyboardType="number-pad"
-                    />
-                    {errors.quantity && (
-                      <Text style={styles.errorMsg}>
-                        {errors.quantity.message}
-                      </Text>
-                    )}
-                  </View>
-                )}
-              /> */}
+
               <View style={styles.costBox}>
                 <Text style={styles.currency}>{currencyCode}</Text>
                 <Controller
@@ -320,7 +299,7 @@ const Form = () => {
                     pagerRef.current?.setPage(1)
                   }}
                 >
-                  <Entypo name="chevron-right" size={24} color={gray[50]} />
+                  <Entypo name="chevron-right" size={24} color={primary[50]} />
                 </Pressable>
               </KeyboardAvoidingView>
             </View>
@@ -472,7 +451,7 @@ const Form = () => {
               pagerRef.current?.setPage(0)
             }}
           >
-            <Entypo name="chevron-left" size={24} color={gray[50]} />
+            <Entypo name="chevron-left" size={24} color={primary[50]} />
           </Pressable>
 
           <Pressable
@@ -636,11 +615,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 30,
     backgroundColor: primary[400],
+    opacity: 0.9,
+    borderWidth: 2,
+    borderColor: primary[100],
   },
   nextBtnTxt: {
     fontFamily: poppins.Regular,
     fontSize: size.lg,
-    color: gray[50],
+    color: primary[50],
   },
   errorMsg: {
     fontFamily: poppins.Regular,

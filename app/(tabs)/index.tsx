@@ -203,7 +203,7 @@ const IndexPage = () => {
   return (
     <SafeAreaView
       edges={['top']}
-      style={{ flex: 1, backgroundColor: gray[50] }}
+      style={{ flex: 1, backgroundColor: primary[50] }}
     >
       <View style={styles.headerTitleContainer}>
         <Text style={styles.headerTitleText}>Dashboard</Text>

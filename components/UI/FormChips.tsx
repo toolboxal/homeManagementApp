@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text } from 'react-native'
-import { gray } from '@/constants/colors'
+import { gray, primary } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import Entypo from '@expo/vector-icons/Entypo'
 
@@ -45,7 +45,7 @@ const Chips = ({
       <Entypo
         name="dot-single"
         size={12}
-        color={isSelected ? gray[50] : gray[900]}
+        color={isSelected ? primary[50] : primary[900]}
       />
       <Text style={isSelected ? styles.selectedChipText : styles.chipText}>
         {formatted}
@@ -83,6 +83,6 @@ const styles = StyleSheet.create({
   selectedChipText: {
     fontFamily: poppins.Regular,
     fontSize: size.xs,
-    color: gray[50],
+    color: primary[50],
   },
 })

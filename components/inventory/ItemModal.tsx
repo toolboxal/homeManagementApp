@@ -29,7 +29,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons'
 import Fontisto from '@expo/vector-icons/Fontisto'
 import { format } from 'date-fns'
 import * as Haptics from 'expo-haptics'
-import { Drumstick, Recycle, Trash2 } from 'lucide-react-native'
+import { Cookie, Trash2 } from 'lucide-react-native'
 
 type Props = {
   openItemModal: boolean
@@ -184,7 +184,7 @@ const ItemModal = ({
               handleStatusChange('consumed', selectedItem!.id)
             }}
           >
-            <Drumstick color="white" size={25} strokeWidth={2} />
+            <Cookie color="white" size={25} strokeWidth={2.5} />
             <Text style={styles.optionTxt}>Consume</Text>
           </Pressable>
           <Pressable
@@ -258,7 +258,10 @@ const ItemModal = ({
                   maximumTrackTintColor={gray[100]}
                   tapToSeek={true}
                   style={styles.slider}
-                  onValueChange={(value) => setSliderValue(value)}
+                  onValueChange={(value) => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+                    setSliderValue(value)
+                  }}
                   thumbTintColor={'white'}
                 />
               </View>
@@ -334,7 +337,11 @@ const ItemModal = ({
                   storeSelection.direction
                 )} ${capitalize(storeSelection.spot)}`}</Text>
               </View>
-              <ScrollView showsVerticalScrollIndicator={false}>
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1, maxHeight: '85%' }}
+                contentContainerStyle={{ paddingBottom: 20 }}
+              >
                 <View style={styles.locationContainer}>
                   <Text style={styles.locationQn}>ROOM</Text>
 
@@ -403,11 +410,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.35)',
   },
   modalBox: {
-    minHeight: '35%',
+    minHeight: '38%',
     width: '92%',
     backgroundColor: gray[50],
     borderRadius: 25,
     padding: 20,
+    paddingBottom: 5,
     marginHorizontal: 'auto',
     marginBottom: 50,
   },

@@ -148,6 +148,7 @@ const InventoryPage = () => {
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
+      showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -162,6 +163,11 @@ const InventoryPage = () => {
       <Stack.Screen
         options={{
           headerSearchBarOptions: {
+            tintColor: primary[500],
+            textColor: primary[700],
+            hintTextColor: 'white',
+            placeholder: 'Search inventory',
+            barTintColor: primary[200],
             onChangeText: (event) => {
               const text = event.nativeEvent.text
               setSearchBarQuery(text)
@@ -288,6 +294,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 12,
     backgroundColor: gray[50],
+    borderRadius: 20,
   },
   title: {
     fontFamily: poppins.Bold,

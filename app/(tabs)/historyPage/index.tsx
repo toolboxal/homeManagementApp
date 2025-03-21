@@ -20,7 +20,7 @@ import Animated, {
   LinearTransition,
 } from 'react-native-reanimated'
 import { capitalize } from '@/utils/capitalize'
-import { Drumstick, Recycle, Trash2 } from 'lucide-react-native'
+import { Drumstick, Recycle, Trash2, Cookie } from 'lucide-react-native'
 import { format } from 'date-fns'
 import * as ContextMenu from 'zeego/context-menu'
 import { eq, not } from 'drizzle-orm'
@@ -36,7 +36,7 @@ const amountAlertColors = {
 }
 
 const statusHeaderEmoji: Record<string, React.ReactNode> = {
-  consumed: <Drumstick size={20} color={primary[500]} strokeWidth={2.5} />,
+  consumed: <Cookie size={20} color={primary[500]} strokeWidth={2.5} />,
   recycled: <Recycle size={20} color={green[500]} strokeWidth={2.5} />,
   disposed: <Trash2 size={20} color={red[400]} strokeWidth={2.5} />,
   deleted: null,
@@ -121,6 +121,11 @@ const HistoryPage = () => {
       <Stack.Screen
         options={{
           headerSearchBarOptions: {
+            tintColor: primary[500],
+            textColor: primary[700],
+            hintTextColor: 'white',
+            placeholder: 'Search history',
+            barTintColor: primary[200],
             onChangeText: (event) => {
               const text = event.nativeEvent.text
               setSearchBarQuery(text)
@@ -232,7 +237,7 @@ const HistoryPage = () => {
           </Text>
           <View style={styles.emptyStateIcons}>
             <View style={styles.iconWithLabel}>
-              <Drumstick size={20} color={primary[500]} strokeWidth={2.5} />
+              <Cookie size={20} color={primary[500]} strokeWidth={2.5} />
               <Text style={styles.iconLabel}>Consumed</Text>
             </View>
             <View style={styles.iconWithLabel}>
@@ -255,7 +260,7 @@ export default HistoryPage
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: gray[50],
+    backgroundColor: primary[50],
     padding: 12,
   },
   title: {
