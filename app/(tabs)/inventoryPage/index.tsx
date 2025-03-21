@@ -293,8 +293,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 12,
-    backgroundColor: gray[50],
-    borderRadius: 20,
+    backgroundColor: primary[50],
   },
   title: {
     fontFamily: poppins.Bold,

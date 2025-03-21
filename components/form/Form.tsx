@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -38,15 +38,17 @@ import FormAddBtn from '../UI/FormAddLocBtn'
 import AddLocModal from './AddLocModal'
 import Entypo from '@expo/vector-icons/Entypo'
 import * as Haptics from 'expo-haptics'
-import { useRouter } from 'expo-router'
+import { Tabs, useRouter } from 'expo-router'
 import CustomToast from '../UI/CustomToast'
 import { toast } from 'sonner-native'
+import { useNavigation } from 'expo-router'
 
 const categoryArray = ['food', 'hygiene', 'supplies', 'miscellaneous'] as const
 type CategoryType = (typeof categoryArray)[number]
 
 const Form = () => {
   const router = useRouter()
+  const navigation = useNavigation()
   const queryClient = useQueryClient()
   const pagerRef = useRef<PagerView>(null)
   const today = new Date()
@@ -66,6 +68,13 @@ const Form = () => {
 
   const [dateOption, setDateOption] = useState(0)
   const { currencyCode } = getLocales()[0]
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      pagerRef.current?.setPage(0)
+    })
+    return unsubscribe
+  }, [navigation])
 
   const { data: tags } = useQuery({
     queryKey: ['tagOptions'],
@@ -171,6 +180,11 @@ const Form = () => {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.formContainer}>
             <View style={styles.formSpine}>
+              {/* Quotation */}
+              <Text style={styles.QuotationText}>
+                Tiny steps to make your home a sanctuary of calm.
+              </Text>
+              {/* Category Selection */}
               <View style={styles.catContainer}>
                 {categoryArray.map((category) => (
                   <Pressable
@@ -476,6 +490,17 @@ const styles = StyleSheet.create({
     margin: 'auto',
     // backgroundColor: primary[100],
     flex: 1,
+  },
+  QuotationText: {
+    width: '80%',
+    fontFamily: bitter.Italic,
+    fontSize: size.lg,
+    lineHeight: size.xxl,
+    marginHorizontal: 'auto',
+    textAlign: 'center',
+    marginTop: 15,
+    marginBottom: 25,
+    color: primary[300],
   },
   catContainer: {
     flexDirection: 'row',

@@ -30,7 +30,7 @@ const RoomListScroll = ({
             },
           ]}
           onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft)
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
             setSelectedRoomId(item.id)
           }}
         >

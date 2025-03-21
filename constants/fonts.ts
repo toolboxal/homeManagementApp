@@ -8,6 +8,7 @@ export const poppins = {
 }
 
 export const bitter = {
+  Italic: 'Bitter_400Regular_Italic',
   Regular: 'Bitter_400Regular',
   Medium: 'Bitter_500Medium',
   SemiBold: 'Bitter_600SemiBold',

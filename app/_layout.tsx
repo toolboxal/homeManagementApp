@@ -73,6 +73,7 @@ export default function RootLayout() {
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
+    Bitter_400Regular_Italic,
     Bitter_400Regular,
     Bitter_500Medium,
     Bitter_600SemiBold,
