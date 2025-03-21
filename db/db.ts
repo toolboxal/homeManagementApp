@@ -6,7 +6,7 @@ export const expoDB = SQLite.openDatabaseSync('app.db')
 expoDB.execSync('PRAGMA foreign_keys = ON;')
 
 // Create the db instance first
-const db = drizzle(expoDB, { schema })
+const db = drizzle(expoDB, { schema, logger: true })
 
 // // One-time reset of database tables to match the current schema
 // try {

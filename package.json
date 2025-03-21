@@ -94,7 +94,9 @@
           "drizzle-orm",
           "expo-drizzle-studio-plugin",
           "expo-checkbox",
-          "@tanstack/react-table"
+          "@tanstack/react-table",
+          "lucide-react-native",
+          "react-native-bouncy-checkbox"
         ],
         "listUnknownPackages": true
       }

@@ -7,6 +7,7 @@ import m0002 from './0002_friendly_toxin.sql'
 import m0003 from './0003_blue_roland_deschain.sql'
 import m0004 from './0004_brave_switch.sql'
 import m0005 from './0005_many_rocket_racer.sql'
+import m0006 from './0006_small_korath.sql'
 
 export default {
   journal,
@@ -17,5 +18,6 @@ export default {
     m0003,
     m0004,
     m0005,
+    m0006,
   },
 }

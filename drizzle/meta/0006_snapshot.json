@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ad07792f-78d9-4326-86bc-0fae3faa7539",
-  "prevId": "d20d882f-4183-4757-affd-1539160fa430",
+  "id": "49ced61a-cf50-4134-bd7f-3493b01ea10a",
+  "prevId": "ad07792f-78d9-4326-86bc-0fae3faa7539",
   "tables": {
     "directions": {
       "name": "directions",
@@ -169,7 +169,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "'2025-03-20'"
+          "default": "'2025-03-22'"
         },
         "cost": {
           "name": "cost",
@@ -285,9 +285,7 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {
-      "\"store_items\".\"quantity\"": "\"store_items\".\"expired\""
-    }
+    "columns": {}
   },
   "internal": {
     "indexes": {}

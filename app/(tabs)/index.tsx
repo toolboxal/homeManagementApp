@@ -23,6 +23,7 @@ import {
   ChevronRight,
   BatteryLow,
   OctagonAlert,
+  Wrench,
 } from 'lucide-react-native'
 import DashBoardModal from '@/components/dashboard/DashBoardModal'
 import { fetchStoreItems } from '@/utils/fetchStoreItems'
@@ -33,8 +34,10 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated'
 import { TData } from './inventoryPage'
+import { useRouter } from 'expo-router'
 
 const IndexPage = () => {
+  const router = useRouter()
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: startOfMonth(new Date()),
     endDate: new Date(),
@@ -207,6 +210,12 @@ const IndexPage = () => {
     >
       <View style={styles.headerTitleContainer}>
         <Text style={styles.headerTitleText}>Dashboard</Text>
+        <Pressable
+          style={styles.settingsBtn}
+          onPress={() => router.push('/settingsPage')}
+        >
+          <Wrench size={23} color={primary[500]} />
+        </Pressable>
       </View>
       {/* Date Filter */}
       <View style={styles.dateFilterContainer}>
@@ -413,7 +422,17 @@ export default IndexPage
 const styles = StyleSheet.create({
   headerTitleContainer: {
     // backgroundColor: 'orange',
-    padding: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  settingsBtn: {
+    padding: 10,
+    borderRadius: 50,
+    backgroundColor: primary[200],
+    marginRight: 2,
   },
   headerTitleText: {
     fontFamily: oswald.Bold,

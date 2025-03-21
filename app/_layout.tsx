@@ -112,15 +112,23 @@ export default function RootLayout() {
   }
 
   return (
-    <SQLiteProvider databaseName="app.db">
-      <QueryClientProvider client={queryClient}>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-          <Toaster richColors position="top-center" />
-        </GestureHandlerRootView>
-      </QueryClientProvider>
-    </SQLiteProvider>
+    // <SQLiteProvider databaseName="app.db">
+    <QueryClientProvider client={queryClient}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="settingsPage"
+            options={{
+              presentation: 'modal',
+              animation: 'slide_from_bottom',
+              animationDuration: 50,
+            }}
+          />
+        </Stack>
+        <Toaster richColors position="top-center" />
+      </GestureHandlerRootView>
+    </QueryClientProvider>
+    // </SQLiteProvider>
   )
 }

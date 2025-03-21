@@ -43,6 +43,13 @@
       "when": 1742197406086,
       "tag": "0005_many_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1742580210507,
+      "tag": "0006_flat_otto_octavius",
+      "breakpoints": true
     }
   ]
 }
