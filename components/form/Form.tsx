@@ -10,6 +10,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native'
 import { getLocales } from 'expo-localization'
 import { useForm, Controller } from 'react-hook-form'
@@ -167,6 +168,10 @@ const Form = () => {
       router.replace('/inventoryPage')
     } catch (error) {
       console.error('Error adding item:', error)
+      Alert.alert(
+        'Check again',
+        'Room, spot or direction chosen might have been previously deleted.'
+      )
     }
   }
 

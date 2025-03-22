@@ -174,7 +174,8 @@ const AddLocModal = ({
       }
 
       // Invalidate and refetch tagOptions query
-      await queryClient.invalidateQueries({ queryKey: ['tagOptions'] })
+      queryClient.invalidateQueries({ queryKey: ['tagOptions'] })
+      queryClient.invalidateQueries({ queryKey: ['location', 'rooms'] })
       reset()
       setOpenAddNewLocModal(false)
     } catch (error) {

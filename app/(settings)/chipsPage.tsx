@@ -79,6 +79,7 @@ const chipsPage = () => {
     mutationFn: handleDelete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tagOptions'] })
+      queryClient.invalidateQueries({ queryKey: ['location', 'rooms'] })
     },
   })
 
@@ -89,7 +90,10 @@ const chipsPage = () => {
           <MoveLeft color={primary[700]} size={25} />
         </Pressable>
       </View>
-      <ScrollView style={styles.spine}>
+      <ScrollView
+        style={styles.spine}
+        contentContainerStyle={{ paddingBottom: 120 }}
+      >
         <Text style={styles.HeaderText}>ROOMS</Text>
         {roomsSorted.map((room) => (
           <Pressable key={room.id} style={styles.chipBox}>
@@ -159,13 +163,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 15,
     backgroundColor: primary[50],
-    marginBottom: 150,
   },
   HeaderText: {
     fontFamily: bitter.Bold,
     fontSize: size.md,
     color: gray[700],
-    marginVertical: 10,
+    marginVertical: 12,
     marginLeft: 3,
   },
   chipBox: {
