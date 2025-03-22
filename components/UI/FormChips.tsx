@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   selectedChip: {
-    padding: 7,
+    padding: 8,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: gray[900],

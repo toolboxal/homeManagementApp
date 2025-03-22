@@ -248,11 +248,12 @@ const ItemModal = ({
               unFillColor="#FFFFFF"
               text="To buy again?"
               iconStyle={{ borderColor: primary[600] }}
-              innerIconStyle={{ borderWidth: 1 }}
+              innerIconStyle={{ borderWidth: 1.5 }}
               textStyle={{
-                fontFamily: poppins.Regular,
+                fontFamily: poppins.Bold,
                 fontSize: size.sm,
                 textDecorationLine: 'none',
+                color: primary[600],
               }}
               onPress={async (isChecked: boolean) => {
                 if (isChecked) {
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalBox: {
     minHeight: '38%',
@@ -465,7 +466,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: 70,
     height: 70,
-    backgroundColor: primary[500],
+    backgroundColor: primary[600],
+    opacity: 0.75,
   },
   optionTxt: { fontFamily: poppins.Medium, fontSize: size.xxs, color: 'white' },
 })

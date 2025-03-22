@@ -257,7 +257,7 @@ const InventoryPage = () => {
                         { fontSize: size.xs, color: primary[600] },
                       ]}
                     >
-                      {item.direction?.direction || 'Unassigned'}
+                      {capitalize(item.direction?.direction || 'Unassigned')}
                     </Text>
                     <Text
                       style={[
@@ -265,7 +265,7 @@ const InventoryPage = () => {
                         { fontSize: size.xs, color: primary[600] },
                       ]}
                     >
-                      {item.spot?.spot || 'Unassigned'}
+                      {capitalize(item.spot?.spot || 'Unassigned')}
                     </Text>
                   </View>
                 </Pressable>

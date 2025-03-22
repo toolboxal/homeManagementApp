@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { primary } from '@/constants/colors'
-import { X, HardDriveUpload, HardDriveDownload } from 'lucide-react-native'
 import { poppins, size } from '@/constants/fonts'
 import { Pressable } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
@@ -8,6 +7,12 @@ import { createBackup, restoreFromBackup } from '@/utils/backup'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner-native'
 import CustomToast from '@/components/UI/CustomToast'
+import {
+  X,
+  HardDriveUpload,
+  HardDriveDownload,
+  LandPlot,
+} from 'lucide-react-native'
 
 const settingsPage = () => {
   const router = useRouter()
@@ -49,6 +54,15 @@ const settingsPage = () => {
           <Text style={styles.optionTxt}>restore backup</Text>
           <HardDriveDownload color={primary[700]} size={23} strokeWidth={2} />
         </Pressable>
+        <Pressable
+          style={styles.optionContainer}
+          onPress={() => {
+            router.navigate('/(settings)/chipsPage')
+          }}
+        >
+          <Text style={styles.optionTxt}>delete room, spot or direction</Text>
+          <LandPlot color={primary[700]} size={23} strokeWidth={1.5} />
+        </Pressable>
       </View>
     </View>
   )
@@ -63,7 +77,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    padding: 15,
+    padding: 12,
+    backgroundColor: primary[100],
   },
   spine: {
     flex: 1,
@@ -73,6 +88,7 @@ const styles = StyleSheet.create({
     fontSize: size.xxl,
     fontFamily: poppins.SemiBold,
     color: primary[700],
+    marginTop: 10,
     marginBottom: 20,
   },
   optionContainer: {

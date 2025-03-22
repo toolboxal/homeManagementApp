@@ -10,6 +10,7 @@ import {
 import { format } from 'date-fns'
 import { poppins, size } from '@/constants/fonts'
 import { TData } from '@/app/(tabs)/inventoryPage'
+import { capitalize } from '@/utils/capitalize'
 
 type Props = {
   openItemModal: boolean
@@ -66,14 +67,14 @@ const DashBoardModal = ({
                     }}
                   >
                     <Text style={styles.itemDetail}>
-                      {item.location?.room || 'Unknown'}
+                      {capitalize(item.location?.room || 'Unassigned')}
                     </Text>
                     <View style={{ flexDirection: 'row', gap: 4 }}>
                       <Text style={styles.itemDetail}>
-                        {item.direction?.direction || 'Unknown'}
+                        {capitalize(item.direction?.direction || 'Unknown')}
                       </Text>
                       <Text style={styles.itemDetail}>
-                        {item.spot?.spot || 'Unknown'}
+                        {capitalize(item.spot?.spot || 'Unknown')}
                       </Text>
                     </View>
                   </View>

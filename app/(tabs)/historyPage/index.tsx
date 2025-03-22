@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   Pressable,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   View,
   ActivityIndicator,
   Alert,
+  RefreshControl,
 } from 'react-native'
 import { Stack } from 'expo-router'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -40,6 +41,7 @@ const statusHeaderEmoji: Record<string, React.ReactNode> = {
 const HistoryPage = () => {
   const [groupedByStatus, setGroupedByStatus] = useState<GroupedItems>([])
   const [searchBarQuery, setSearchBarQuery] = useState<string>('')
+  const [refreshing, setRefreshing] = useState(false)
   const queryClient = useQueryClient()
 
   const {
@@ -108,10 +110,26 @@ const HistoryPage = () => {
     queryClient.invalidateQueries({ queryKey: ['history'] })
   }
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={primary[500]}
+          colors={[primary[500]]}
+          progressBackgroundColor={primary[500]}
+          size={size.xxs}
+        />
+      }
     >
       <Stack.Screen
         options={{
