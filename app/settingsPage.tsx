@@ -1,12 +1,37 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { primary } from '@/constants/colors'
-import { X, Cloud } from 'lucide-react-native'
+import { X, HardDriveUpload, HardDriveDownload } from 'lucide-react-native'
 import { poppins, size } from '@/constants/fonts'
 import { Pressable } from 'react-native-gesture-handler'
 import { useRouter } from 'expo-router'
+import { createBackup, restoreFromBackup } from '@/utils/backup'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner-native'
+import CustomToast from '@/components/UI/CustomToast'
 
 const settingsPage = () => {
   const router = useRouter()
+  const queryClient = useQueryClient()
+
+  const handleBackUp = async () => {
+    await createBackup()
+    router.dismiss()
+  }
+
+  const handleRestore = async () => {
+    const result = await restoreFromBackup()
+    if (result === 'success') {
+      queryClient.invalidateQueries({ queryKey: ['store_items'] })
+      queryClient.invalidateQueries({
+        queryKey: ['shoppingList'],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['history'],
+      })
+      toast.custom(<CustomToast message="Data restored successfully" />)
+      router.dismiss()
+    }
+  }
   return (
     <View style={styles.page}>
       <View style={styles.topBar}>
@@ -16,9 +41,13 @@ const settingsPage = () => {
       </View>
       <View style={styles.spine}>
         <Text style={styles.title}>settings</Text>
-        <Pressable style={styles.optionContainer}>
-          <Text style={styles.optionTxt}>Backup to Cloud</Text>
-          <Cloud color={primary[700]} size={23} strokeWidth={1} />
+        <Pressable style={styles.optionContainer} onPress={handleBackUp}>
+          <Text style={styles.optionTxt}>create backup</Text>
+          <HardDriveUpload color={primary[700]} size={23} strokeWidth={2} />
+        </Pressable>
+        <Pressable style={styles.optionContainer} onPress={handleRestore}>
+          <Text style={styles.optionTxt}>restore backup</Text>
+          <HardDriveDownload color={primary[700]} size={23} strokeWidth={2} />
         </Pressable>
       </View>
     </View>
@@ -54,6 +83,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 5,
   },
   optionTxt: {
     fontFamily: poppins.Regular,

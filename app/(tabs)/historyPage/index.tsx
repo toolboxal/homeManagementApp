@@ -14,13 +14,8 @@ import { storeItems, TStoreItemSelect } from '@/db/schema'
 import { primary, brown, gray, green, red } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { fetchNonActiveItems } from '@/utils/fetchNonActiveItems'
-import Animated, {
-  FadeInDown,
-  FadeOutUp,
-  LinearTransition,
-} from 'react-native-reanimated'
 import { capitalize } from '@/utils/capitalize'
-import { Drumstick, Recycle, Trash2, Cookie } from 'lucide-react-native'
+import { Recycle, Trash2, Cookie } from 'lucide-react-native'
 import { format } from 'date-fns'
 import * as ContextMenu from 'zeego/context-menu'
 import { eq, not } from 'drizzle-orm'
