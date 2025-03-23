@@ -4,14 +4,13 @@ import {
   Modal,
   Pressable,
   TextInput,
-  KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from 'react-native'
 import { Controller, useForm } from 'react-hook-form'
-import { gray, red } from '@/constants/colors'
+import { gray, primary, red } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import AntDesign from '@expo/vector-icons/AntDesign'
-import { capitalize } from '@/utils/capitalize'
 import {
   shoppingList,
   shoppingListInsertSchema,
@@ -22,6 +21,12 @@ import db from '@/db/db'
 import { useQueryClient } from '@tanstack/react-query'
 import { eq } from 'drizzle-orm'
 import { useEffect } from 'react'
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
 
 type Props = {
   openAddNewItemModal: boolean
@@ -37,6 +42,9 @@ const AddShoppingItemModal = ({
   item,
 }: Props) => {
   const queryClient = useQueryClient()
+
+  // Reanimated shared value for the input's vertical offset
+  const translateY = useSharedValue(0)
 
   const {
     control,
@@ -72,6 +80,7 @@ const AddShoppingItemModal = ({
           .where(eq(shoppingList.id, item.id))
           .execute()
       }
+      Haptics.NotificationFeedbackType.Success
       queryClient.invalidateQueries({ queryKey: ['shoppingList'] })
       reset()
       setOpenAddNewItemModal(false)
@@ -84,57 +93,73 @@ const AddShoppingItemModal = ({
     }
   }
 
+  // Animate the input based on keyboard events
+  useEffect(() => {
+    const keyboardDidShow = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        const keyboardHeight = e.endCoordinates.height
+        translateY.value = withTiming(-keyboardHeight, { duration: 300 }) // Smoothly animate up
+      }
+    )
+
+    const keyboardDidHide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        translateY.value = withTiming(0, { duration: 300 }) // Smoothly animate back down
+      }
+    )
+
+    return () => {
+      keyboardDidShow.remove()
+      keyboardDidHide.remove()
+    }
+  }, [translateY])
+
+  // Animated style for the input container
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }))
+
   return (
     <Modal
-      animationType="none"
+      animationType="fade" // Changed to "fade" for smoother modal appearance
       transparent={true}
       visible={openAddNewItemModal}
       onRequestClose={() => setOpenAddNewItemModal(false)}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-        keyboardVerticalOffset={0}
+      <Pressable
+        style={styles.overlay}
+        onPress={() => setOpenAddNewItemModal(false)}
       >
-        <Pressable
-          style={styles.overlay}
-          onPress={() => setOpenAddNewItemModal(false)}
-        >
-          <Pressable
-            onPress={(e) => e.stopPropagation()}
-            style={styles.InputContainer}
-          >
-            <Controller
-              name="name"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  onChangeText={onChange}
-                  value={value}
-                  onBlur={onBlur}
-                  style={styles.textInput}
-                  placeholder={
-                    mode === 'create' ? 'create a new item' : 'edit item'
-                  }
-                  placeholderTextColor={gray[400]}
-                  autoFocus={true}
-                />
-              )}
-            />
-            <Pressable
-              style={styles.submitBtn}
-              onPress={handleSubmit(onSubmit)}
-            >
-              <AntDesign name="arrowright" size={24} color={gray[100]} />
-            </Pressable>
-            {errors.name && (
-              <Text style={styles.errorText}>
-                {errors.name?.message?.toString()}
-              </Text>
+        <Animated.View style={[styles.InputContainer, animatedStyle]}>
+          <Controller
+            name="name"
+            control={control}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                onChangeText={onChange}
+                value={value}
+                onBlur={onBlur}
+                style={styles.textInput}
+                placeholder={
+                  mode === 'create' ? 'create a new item' : 'edit item'
+                }
+                placeholderTextColor={gray[400]}
+                autoFocus={true}
+              />
             )}
+          />
+          <Pressable style={styles.submitBtn} onPress={handleSubmit(onSubmit)}>
+            <AntDesign name="arrowright" size={24} color={gray[100]} />
           </Pressable>
-        </Pressable>
-      </KeyboardAvoidingView>
+          {errors.name && (
+            <Text style={styles.errorText}>
+              {errors.name?.message?.toString()}
+            </Text>
+          )}
+        </Animated.View>
+      </Pressable>
     </Modal>
   )
 }
@@ -144,27 +169,28 @@ export default AddShoppingItemModal
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end', // Start the input at the bottom
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   InputContainer: {
-    backgroundColor: 'white',
+    backgroundColor: primary[50],
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 15,
     paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   textInput: {
     flex: 1,
     fontFamily: poppins.Regular,
     fontSize: size.md,
-    backgroundColor: 'white',
+    backgroundColor: primary[50],
     borderRadius: 12,
     paddingHorizontal: 18,
-    paddingBottom: 15,
-    paddingTop: 20,
+    paddingVertical: 15, // Unified padding for consistency
     color: gray[700],
     position: 'relative',
   },
