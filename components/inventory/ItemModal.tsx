@@ -241,7 +241,7 @@ const ItemModal = ({
                 setSliderValue(value)
               }}
               thumbTintColor={'white'}
-              // Android-specific props
+              tapToSeek
             />
           </View>
           <View style={[styles.checkboxBox]}>

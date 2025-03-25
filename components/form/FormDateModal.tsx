@@ -68,8 +68,16 @@ const FormDateModal = ({
               dateOption === 1 ? dateExpiry : add(new Date(), { years: 10 })
             }
             value={date}
-            onChange={(event, date) => {
-              setDate(date || new Date())
+            onChange={(event, selectedDate) => {
+              if (
+                Platform.OS === 'android' &&
+                (event.type === 'set' || event.type === 'dismissed')
+              ) {
+                setDate(selectedDate || date)
+                setOpenDateModal(false)
+              } else {
+                setDate(selectedDate || date) // iOS inline picker updates
+              }
             }}
             style={[
               styles.datePicker,
