@@ -270,7 +270,7 @@ const IndexPage = () => {
       </View>
       <ScrollView
         style={styles.scrollContainer}
-        contentContainerStyle={{ flex: 1, marginTop: 12, gap: 8 }}
+        contentContainerStyle={{ marginTop: 12, gap: 8, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
