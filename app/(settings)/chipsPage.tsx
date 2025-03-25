@@ -103,6 +103,12 @@ const chipsPage = () => {
             </View>
             <Pressable
               onPress={() => mutation.mutate({ type: 'room', id: room.id })}
+              pressRetentionOffset={{
+                bottom: 10,
+                left: 10,
+                right: 10,
+                top: 10,
+              }}
             >
               <X color={gray[300]} strokeWidth={1.5} size={18} />
             </Pressable>
@@ -117,6 +123,12 @@ const chipsPage = () => {
             </View>
             <Pressable
               onPress={() => mutation.mutate({ type: 'spot', id: spot.id })}
+              pressRetentionOffset={{
+                bottom: 10,
+                left: 10,
+                right: 10,
+                top: 10,
+              }}
             >
               <X color={gray[300]} strokeWidth={1.5} size={18} />
             </Pressable>
@@ -135,6 +147,12 @@ const chipsPage = () => {
               onPress={() =>
                 mutation.mutate({ type: 'direction', id: direction.id })
               }
+              pressRetentionOffset={{
+                bottom: 10,
+                left: 10,
+                right: 10,
+                top: 10,
+              }}
             >
               <X color={gray[300]} strokeWidth={1.5} size={18} />
             </Pressable>
