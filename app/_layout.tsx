@@ -3,7 +3,6 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { useDrizzleStudio } from 'expo-drizzle-studio-plugin'
-import { SQLiteProvider } from 'expo-sqlite'
 import {
   useFonts,
   Bitter_100Thin,

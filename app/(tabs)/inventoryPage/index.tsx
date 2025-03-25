@@ -156,7 +156,6 @@ const InventoryPage = () => {
           tintColor={primary[500]}
           colors={[primary[500]]}
           progressBackgroundColor={primary[500]}
-          size={size.xs}
         />
       }
     >

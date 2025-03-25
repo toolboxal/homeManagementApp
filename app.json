@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "homeManagementApp",
-    "slug": "homeManagementApp",
+    "name": "perfectSpaceApp",
+    "slug": "perfectSpaceApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -10,14 +10,16 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.toolboxal.homeManagementApp"
+      "bundleIdentifier": "com.alvindevapps.perfectSpaceApp",
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#7f565d"
       },
-      "package": "com.toolboxal.homeManagementApp"
+      "versionCode": 1,
+      "package": "com.alvindevapps.perfectSpaceApp"
     },
     "web": {
       "bundler": "metro",
@@ -37,13 +39,21 @@
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "resizeMode": "cover",
+          "backgroundColor": "#7f565d"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "793d5754-eb1b-4f78-8b59-d4ef5d407cab"
+      }
     }
   }
 }

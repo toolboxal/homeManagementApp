@@ -232,13 +232,16 @@ const ItemModal = ({
               value={sliderValue}
               minimumTrackTintColor={gray[900]}
               maximumTrackTintColor={gray[100]}
-              tapToSeek={true}
               style={styles.slider}
               onValueChange={(value) => {
+                console.log('slider value', value)
+              }}
+              onSlidingComplete={(value) => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                 setSliderValue(value)
               }}
               thumbTintColor={'white'}
+              // Android-specific props
             />
           </View>
           <View style={[styles.checkboxBox]}>
