@@ -189,16 +189,22 @@ const AddLocModal = ({
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       (e) => {
         const keyboardHeight = e.endCoordinates.height
-        translateY.value = withTiming(-keyboardHeight, {
-          duration: 275,
-        }) // Smoothly animate up
+        // Only animate on iOS, Android handles this automatically
+        if (Platform.OS === 'ios') {
+          translateY.value = withTiming(-keyboardHeight, {
+            duration: 275,
+          })
+        }
       }
     )
 
     const keyboardDidHide = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
-        translateY.value = withTiming(0, { duration: 275 }) // Smoothly animate back down
+        // Only animate on iOS, Android handles this automatically
+        if (Platform.OS === 'ios') {
+          translateY.value = withTiming(0, { duration: 275 })
+        }
       }
     )
 

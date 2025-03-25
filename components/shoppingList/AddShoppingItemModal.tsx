@@ -99,14 +99,20 @@ const AddShoppingItemModal = ({
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       (e) => {
         const keyboardHeight = e.endCoordinates.height
-        translateY.value = withTiming(-keyboardHeight, { duration: 300 }) // Smoothly animate up
+        if (Platform.OS === 'ios') {
+          translateY.value = withTiming(-keyboardHeight, {
+            duration: 275,
+          })
+        }
       }
     )
 
     const keyboardDidHide = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
-        translateY.value = withTiming(0, { duration: 300 }) // Smoothly animate back down
+        if (Platform.OS === 'ios') {
+          translateY.value = withTiming(0, { duration: 275 })
+        }
       }
     )
 
