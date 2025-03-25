@@ -1,17 +1,21 @@
 {
   "expo": {
-    "name": "perfectSpaceApp",
-    "slug": "perfectSpaceApp",
+    "name": "perfectSpacesApp",
+    "slug": "perfectSpacesApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "owner": "alvindevapps",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.alvindevapps.perfectSpaceApp",
-      "buildNumber": "1"
+      "bundleIdentifier": "com.alvindevapps.perfectSpacesApp",
+      "buildNumber": "3",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +23,7 @@
         "backgroundColor": "#7f565d"
       },
       "versionCode": 1,
-      "package": "com.alvindevapps.perfectSpaceApp"
+      "package": "com.alvindevapps.perfectSpacesApp"
     },
     "web": {
       "bundler": "metro",
@@ -52,7 +56,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "793d5754-eb1b-4f78-8b59-d4ef5d407cab"
+        "projectId": "f36a4214-cdc7-4739-96d6-d31821c44a4d"
       }
     }
   }

@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Platform, StyleSheet, Text, View } from 'react-native'
 import { Tabs } from 'expo-router'
 import { primary, gray } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
 import { Home, Notebook, Plus, ShoppingBag, Trash } from 'lucide-react-native'
 import * as Haptics from 'expo-haptics'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 const TabsLayout = () => {
+  const { bottom } = useSafeAreaInsets()
   return (
     <Tabs
       screenListeners={{
@@ -18,7 +20,8 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: primary[50],
           borderTopColor: primary[50],
-          paddingTop: 5,
+          paddingTop: Platform.OS === 'ios' ? 5 : 10,
+          height: Platform.OS === 'ios' ? bottom + 50 : bottom + 60,
         },
         tabBarLabelStyle: {
           fontFamily: poppins.Medium,
@@ -27,6 +30,7 @@ const TabsLayout = () => {
         tabBarInactiveTintColor: primary[300],
         tabBarActiveTintColor: primary[800],
         tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tabs.Screen
