@@ -11,12 +11,18 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useQuery } from '@tanstack/react-query'
 import { primary, gray, green, red } from '@/constants/colors'
 import { oswald, poppins, size } from '@/constants/fonts'
-import { startOfMonth, startOfYear, format, differenceInDays } from 'date-fns'
+import {
+  startOfMonth,
+  startOfYear,
+  format,
+  differenceInDays,
+  endOfMonth,
+  endOfYear,
+} from 'date-fns'
 import db from '@/db/db'
 import { storeItems, TStoreItemSelect } from '@/db/schema'
 import { and, gte, lte } from 'drizzle-orm'
 import {
-  PiggyBank,
   Cookie,
   Recycle,
   Trash2,
@@ -35,17 +41,14 @@ import Animated, {
 } from 'react-native-reanimated'
 import { TData } from './inventoryPage'
 import { useRouter } from 'expo-router'
-import {
-  formatCurrency,
-  getSupportedCurrencies,
-} from 'react-native-format-currency'
+import { formatCurrency } from 'react-native-format-currency'
 import { MMKVStorage } from '@/storage/mmkv'
 
 const IndexPage = () => {
   const router = useRouter()
   const [selectedDateRange, setSelectedDateRange] = useState({
     startDate: startOfMonth(new Date()),
-    endDate: new Date(),
+    endDate: endOfMonth(new Date()),
   })
   const [tabSelected, setTabSelected] = useState('month')
   const [openItemModal, setOpenItemModal] = useState(false)
@@ -93,7 +96,11 @@ const IndexPage = () => {
         })
       },
     })
-  // console.log(storeItemsByDateBought)
+  console.log(
+    'date range ---->>>',
+    format(selectedDateRange.startDate, 'yyyy-MM-dd')
+  )
+  console.log('storeItemsByDateBought ---->>>', storeItemsByDateBought)
 
   const { data: storeItemsByStatusChange, refetch: refetchByStatusChange } =
     useQuery<TStoreItemSelect[], Error>({
@@ -155,7 +162,7 @@ const IndexPage = () => {
     amount: parseFloat(totalSpent),
     code: MMKVStorage.getString('user.currency') ?? 'USD',
   })
-
+  console.log(totalSpent, formattedTotalSpent)
   const expiringOneWeek = allStoreItems?.filter((item: TData) => {
     if (item.category !== 'food') return false
     const daysLeft = differenceInDays(new Date(item.dateExpiry), new Date())
@@ -173,7 +180,7 @@ const IndexPage = () => {
     const daysLeft = differenceInDays(new Date(item.dateExpiry), new Date())
     return daysLeft <= 0
   })
-  console.log(expiringOneWeek)
+  // console.log(expiringOneWeek)
 
   // Add shared values for animations
   const animationProgress = useSharedValue(0)
@@ -240,7 +247,7 @@ const IndexPage = () => {
             setTabSelected('month')
             setSelectedDateRange({
               startDate: startOfMonth(new Date()),
-              endDate: new Date(),
+              endDate: endOfMonth(new Date()),
             })
           }}
         >
@@ -264,7 +271,7 @@ const IndexPage = () => {
             setTabSelected('year')
             setSelectedDateRange({
               startDate: startOfYear(new Date()),
-              endDate: new Date(),
+              endDate: endOfYear(new Date()),
             })
           }}
         >
