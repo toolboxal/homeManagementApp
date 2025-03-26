@@ -28,7 +28,12 @@ import db from '@/db/db'
 import { eq } from 'drizzle-orm'
 import { gray, primary, red } from '@/constants/colors'
 import { poppins, bitter, size } from '@/constants/fonts'
-import { add, format } from 'date-fns'
+import {
+  add,
+  format,
+  formatDistanceToNow,
+  formatDistanceToNowStrict,
+} from 'date-fns'
 import FormDateModal from './FormDateModal'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getTagOptions } from '@/db/seeding'
@@ -181,6 +186,8 @@ const Form = () => {
     }
   }
 
+  const durationCalc = formatDistanceToNow(new Date(dateExpiry))
+
   return (
     <PagerView
       ref={pagerRef}
@@ -312,6 +319,11 @@ const Form = () => {
                 dateBought={dateBought}
                 dateExpiry={dateExpiry}
               />
+              <Text style={styles.durationText}>
+                {categorySelect === 'food'
+                  ? 'expires in ' + durationCalc
+                  : 'replace in ' + durationCalc}
+              </Text>
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={[styles.navBtnsContainer, { justifyContent: 'center' }]}
@@ -667,5 +679,16 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 2,
     left: 15,
+  },
+  durationText: {
+    fontFamily: poppins.Italic,
+    fontSize: size.sm,
+    color: gray[500],
+    textAlign: 'right',
+    marginTop: 30,
+    marginRight: 10,
+    // position: 'absolute',
+    // bottom: 20,
+    // left: 10,
   },
 })
