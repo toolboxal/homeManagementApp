@@ -16,6 +16,12 @@ const SettingsLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="currencyPage"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   )
 }

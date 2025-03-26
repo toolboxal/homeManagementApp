@@ -12,6 +12,7 @@ import {
   HardDriveUpload,
   HardDriveDownload,
   LandPlot,
+  DollarSign,
 } from 'lucide-react-native'
 
 const settingsPage = () => {
@@ -62,6 +63,15 @@ const settingsPage = () => {
         >
           <Text style={styles.optionTxt}>delete room, spot or direction</Text>
           <LandPlot color={primary[700]} size={23} strokeWidth={1.5} />
+        </Pressable>
+        <Pressable
+          style={styles.optionContainer}
+          onPress={() => {
+            router.navigate('/(settings)/currencyPage')
+          }}
+        >
+          <Text style={styles.optionTxt}>change currency</Text>
+          <DollarSign color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
       </View>
     </View>

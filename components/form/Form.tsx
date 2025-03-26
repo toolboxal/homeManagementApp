@@ -43,6 +43,7 @@ import { Tabs, useRouter } from 'expo-router'
 import CustomToast from '../UI/CustomToast'
 import { toast } from 'sonner-native'
 import { useNavigation } from 'expo-router'
+import { MMKVStorage } from '@/storage/mmkv'
 
 const categoryArray = ['food', 'hygiene', 'supplies', 'miscellaneous'] as const
 type CategoryType = (typeof categoryArray)[number]
@@ -68,7 +69,12 @@ const Form = () => {
   })
 
   const [dateOption, setDateOption] = useState(0)
-  const { currencyCode } = getLocales()[0]
+
+  const chosenCurrency = MMKVStorage.getString('user.currency')
+  if (!chosenCurrency) {
+    const { currencyCode } = getLocales()[0]
+    MMKVStorage.set('user.currency', currencyCode || 'USD')
+  }
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -163,7 +169,7 @@ const Form = () => {
       console.log('Item added successfully!')
       toast.custom(<CustomToast message="Item saved to inventory" />)
       reset()
-      pagerRef.current?.setPage(0)
+      // pagerRef.current?.setPage(0)
       queryClient.invalidateQueries({ queryKey: ['store_items'] })
       router.replace('/inventoryPage')
     } catch (error) {
@@ -237,7 +243,7 @@ const Form = () => {
               />
 
               <View style={styles.costBox}>
-                <Text style={styles.currency}>{currencyCode}</Text>
+                <Text style={styles.currency}>{chosenCurrency}</Text>
                 <Controller
                   name="cost"
                   control={control}

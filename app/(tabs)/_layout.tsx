@@ -20,8 +20,8 @@ const TabsLayout = () => {
         tabBarStyle: {
           backgroundColor: primary[50],
           borderTopColor: primary[50],
-          paddingTop: Platform.OS === 'ios' ? 5 : 10,
-          height: Platform.OS === 'ios' ? bottom + 50 : bottom + 60,
+          paddingTop: 10,
+          height: Platform.OS === 'ios' ? bottom + 55 : bottom + 60,
         },
         tabBarLabelStyle: {
           fontFamily: poppins.Medium,

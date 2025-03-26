@@ -35,6 +35,11 @@ import Animated, {
 } from 'react-native-reanimated'
 import { TData } from './inventoryPage'
 import { useRouter } from 'expo-router'
+import {
+  formatCurrency,
+  getSupportedCurrencies,
+} from 'react-native-format-currency'
+import { MMKVStorage } from '@/storage/mmkv'
 
 const IndexPage = () => {
   const router = useRouter()
@@ -139,11 +144,17 @@ const IndexPage = () => {
   )
   const recycledWastage = recycledArr?.filter((item) => item.amount !== 'empty')
   const disposedWastage = disposedArr?.filter((item) => item.amount !== 'empty')
-  const totalSpent = storeItemsByDateBought
-    ?.reduce((acc: number, item: TStoreItemSelect) => {
-      return acc + parseFloat(item.cost)
-    }, 0)
-    .toFixed(2)
+  const totalSpent =
+    storeItemsByDateBought
+      ?.reduce((acc: number, item: TStoreItemSelect) => {
+        return acc + parseFloat(item.cost)
+      }, 0)
+      .toFixed(2) ?? '0'
+
+  const [_, formattedTotalSpent, curSymbol] = formatCurrency({
+    amount: parseFloat(totalSpent),
+    code: MMKVStorage.getString('user.currency') ?? 'USD',
+  })
 
   const expiringOneWeek = allStoreItems?.filter((item: TData) => {
     if (item.category !== 'food') return false
@@ -289,8 +300,9 @@ const IndexPage = () => {
             }`}
           </Text>
           <View style={styles.figuresBox}>
-            <PiggyBank size={25} color={gray[700]} strokeWidth={2.5} />
-            <AnimatedFigure value={totalSpent} />
+            {/* <PiggyBank size={25} color={gray[700]} strokeWidth={2.5} /> */}
+            <AnimatedFigure value={curSymbol} />
+            <AnimatedFigure value={formattedTotalSpent} />
           </View>
         </View>
         <View style={styles.infoBox}>
