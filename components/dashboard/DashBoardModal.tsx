@@ -27,6 +27,9 @@ const DashBoardModal = ({
   title,
   description,
 }: Props) => {
+  const sortedByExpiryDate = modalDataFeed?.sort((a, b) => {
+    return new Date(a.dateExpiry).getTime() - new Date(b.dateExpiry).getTime()
+  })
   return (
     <Modal
       animationType="slide"
@@ -47,7 +50,7 @@ const DashBoardModal = ({
             showsVerticalScrollIndicator={false}
           >
             {modalDataFeed && modalDataFeed.length > 0 ? (
-              modalDataFeed.map((item) => (
+              sortedByExpiryDate?.map((item) => (
                 <View key={item.id} style={styles.itemContainer}>
                   <View>
                     <Text style={styles.itemName}>{item.name}</Text>
