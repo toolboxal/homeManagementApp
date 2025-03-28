@@ -28,12 +28,7 @@ import db from '@/db/db'
 import { eq } from 'drizzle-orm'
 import { gray, primary, red } from '@/constants/colors'
 import { poppins, bitter, size } from '@/constants/fonts'
-import {
-  add,
-  format,
-  formatDistanceToNow,
-  formatDistanceToNowStrict,
-} from 'date-fns'
+import { add, format, formatDistanceToNow } from 'date-fns'
 import FormDateModal from './FormDateModal'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { getTagOptions } from '@/db/seeding'
@@ -49,6 +44,15 @@ import CustomToast from '../UI/CustomToast'
 import { toast } from 'sonner-native'
 import { useNavigation } from 'expo-router'
 import { MMKVStorage } from '@/storage/mmkv'
+import AnnoucementModal from '../announcement/AnnouncementModal'
+import { useRevenueCat } from '@/providers/RCProvider'
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui'
+
+const goPro = async () => {
+  const paywallResult: PAYWALL_RESULT = await RevenueCatUI.presentPaywall()
+  console.log(paywallResult)
+  return paywallResult
+}
 
 const categoryArray = ['food', 'hygiene', 'supplies', 'miscellaneous'] as const
 type CategoryType = (typeof categoryArray)[number]
@@ -59,6 +63,7 @@ const Form = () => {
   const queryClient = useQueryClient()
   const pagerRef = useRef<PagerView>(null)
   const today = new Date()
+  const [showAnnouncement, setShowAnnouncement] = useState(false)
   const [categorySelect, setCategorySelect] = useState<CategoryType>(
     categoryArray[0]
   )
@@ -74,6 +79,14 @@ const Form = () => {
   })
 
   const [dateOption, setDateOption] = useState(0)
+
+  useEffect(() => {
+    const hasSeenAnnouncement = MMKVStorage.getBoolean('trial_announcement')
+    if (!hasSeenAnnouncement) {
+      setShowAnnouncement(true)
+      MMKVStorage.set('trial_announcement', true)
+    }
+  }, [])
 
   const chosenCurrency = MMKVStorage.getString('user.currency')
   if (!chosenCurrency) {
@@ -324,6 +337,18 @@ const Form = () => {
                   ? 'expires in ' + durationCalc
                   : 'replace in ' + durationCalc}
               </Text>
+              <AnnoucementModal
+                openItemModal={showAnnouncement}
+                setOpenItemModal={setShowAnnouncement}
+                title="Pro Plan"
+                description={{
+                  period: 'full access for 7 days',
+                  desc1: 'always know where your items are',
+                  btn1: 'Continue for free',
+                  btn2: 'Subscribe now',
+                }}
+                btnFunc={goPro}
+              />
               <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={[styles.navBtnsContainer, { justifyContent: 'center' }]}

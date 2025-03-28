@@ -13,7 +13,7 @@ const goPro = async () => {
 const formPage = () => {
   const { isPro } = useRevenueCat()
   if (!isPro) {
-    goPro()
+    // goPro()
   }
 
   return (
@@ -26,4 +26,3 @@ const formPage = () => {
   )
 }
 export default formPage
-const styles = StyleSheet.create({})

@@ -402,7 +402,7 @@ const IndexPage = () => {
             setModalDataFeed(replaceOneMonth || null)
             setOpenItemModal(true)
             setModalInfo({
-              headerText: 'Needs replaceing soon',
+              headerText: 'Needs replacing soon',
               description: "Item's marked for replacing",
             })
           }}

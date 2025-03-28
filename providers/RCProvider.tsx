@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 import Purchases, { LOG_LEVEL } from 'react-native-purchases'
 import { CustomerInfo } from 'react-native-purchases'
-import { custom } from 'zod'
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
