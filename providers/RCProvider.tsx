@@ -4,6 +4,7 @@ import Purchases, { LOG_LEVEL, CustomerInfo } from 'react-native-purchases'
 import { MMKVStorage } from '@/storage/mmkv'
 import HardPaywall from '@/components/payment/HardPaywall'
 import TrialModal from '@/components/payment/TrialModal'
+import WelcomeScreen from '@/components/payment/WelcomeScreen'
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
@@ -70,6 +71,16 @@ export const RevenueCatProvider = ({
     }
 
     initialize()
+
+    // Set up a timer to check trial status every second
+    const timer = setInterval(() => {
+      const trialStart = MMKVStorage.getString('trialStartDate')
+      if (trialStart) {
+        updateTrialStatus(new Date(trialStart))
+      }
+    }, 1000) // Check every 1 second
+    // Cleanup timer on unmount
+    return () => clearInterval(timer)
   }, [])
 
   const updateCustomerInfo = (customerInfo: CustomerInfo) => {
@@ -112,11 +123,18 @@ export const RevenueCatProvider = ({
   if (!isReady) return null // Or loading spinner
 
   const hasAccess = isPro || isTrialActive
+  const trialStart = MMKVStorage.getString('trialStartDate')
 
   return (
     <>
       <RevenueCatContext.Provider value={{ isPro, isTrialActive, hasAccess }}>
-        {hasAccess ? children : <HardPaywall />}
+        {hasAccess ? (
+          children
+        ) : trialStart ? (
+          <HardPaywall />
+        ) : (
+          <WelcomeScreen />
+        )}
       </RevenueCatContext.Provider>
 
       <TrialModal
