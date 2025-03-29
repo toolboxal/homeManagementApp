@@ -107,7 +107,8 @@
           "@tanstack/react-table",
           "lucide-react-native",
           "react-native-bouncy-checkbox",
-          "react-native-purchases-ui"
+          "react-native-purchases-ui",
+          "react-native-format-currency"
         ],
         "listUnknownPackages": true
       }

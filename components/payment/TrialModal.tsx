@@ -1,76 +1,49 @@
 import { primary, gray } from '@/constants/colors'
 import { StyleSheet, Text, View, Modal, Pressable } from 'react-native'
-import { PAYWALL_RESULT } from 'react-native-purchases-ui'
 import { toast } from 'sonner-native'
 import CustomToast from '../UI/CustomToast'
 
 import { bitter, poppins, size } from '@/constants/fonts'
 
 type Props = {
-  openItemModal: boolean
-  setOpenItemModal: React.Dispatch<React.SetStateAction<boolean>>
+  handleStartTrial: () => void
+  handleSubscribeNow: () => void
+  showTrialModal: boolean
   title: string
   description: Record<string, string>
-  btnFunc: () => Promise<PAYWALL_RESULT>
 }
 
-const AnnoucementModal = ({
-  openItemModal,
-  setOpenItemModal,
+const TrialModal = ({
+  handleStartTrial,
+  handleSubscribeNow,
+  showTrialModal,
   title,
   description,
-  btnFunc,
 }: Props) => {
-  const handlePaywall = async () => {
-    try {
-      const result = await btnFunc()
-
-      switch (result) {
-        case PAYWALL_RESULT.PURCHASED:
-          // User successfully purchased
-          setOpenItemModal(false)
-          toast.custom(<CustomToast message="Thank you for subscribing" />)
-          break
-        case PAYWALL_RESULT.RESTORED:
-          // Purchase was restored
-          setOpenItemModal(false)
-          toast.custom(<CustomToast message="Purchase restored" />)
-          break
-        case PAYWALL_RESULT.CANCELLED:
-          // User cancelled the purchase
-          break
-        case PAYWALL_RESULT.ERROR:
-          // Handle error case
-          break
-      }
-    } catch (error) {
-      console.error('Paywall error:', error)
-    }
-  }
-
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={openItemModal}
-      onRequestClose={() => setOpenItemModal(false)}
-    >
+    <Modal animationType="fade" transparent={true} visible={showTrialModal}>
       <View style={styles.container}>
         <Pressable style={styles.overlay} />
         <View style={styles.modalBox}>
           <Text style={styles.modalTitle}>{title}</Text>
-          <Text style={styles.modalDescription}>{description.desc1}</Text>
           <Text style={styles.modalDescription}>{description.period}</Text>
+          <Text style={styles.modalDescription}>{description.desc1}</Text>
           <Pressable
             style={styles.btn}
             onPress={() => {
-              setOpenItemModal(false)
+              handleStartTrial()
               toast.custom(<CustomToast message="Let's start organising!" />)
             }}
           >
             <Text style={styles.btnText}>{description.btn1}</Text>
           </Pressable>
-          <Pressable style={styles.btn} onPress={handlePaywall}>
+          <Pressable
+            style={styles.btn}
+            onPress={() => {
+              handleSubscribeNow()
+              toast.custom(<CustomToast message="You have pro access now" />)
+            }}
+          >
             <Text style={styles.btnText}>{description.btn2}</Text>
           </Pressable>
         </View>
@@ -79,7 +52,7 @@ const AnnoucementModal = ({
   )
 }
 
-export default AnnoucementModal
+export default TrialModal
 
 const styles = StyleSheet.create({
   container: {
@@ -94,7 +67,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   modalBox: {
     width: '100%',
