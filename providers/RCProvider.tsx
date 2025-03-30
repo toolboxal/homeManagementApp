@@ -22,6 +22,7 @@ interface RevenueCatProps {
   isTrialActive: boolean
   hasAccess: boolean
   subscribeNow: () => void
+  restorePurchase: () => Promise<void>
 }
 
 const RevenueCatContext = createContext<RevenueCatProps>({
@@ -29,6 +30,7 @@ const RevenueCatContext = createContext<RevenueCatProps>({
   isTrialActive: false,
   hasAccess: false,
   subscribeNow: () => {},
+  restorePurchase: async () => {},
 })
 
 export const RevenueCatProvider = ({
@@ -99,6 +101,17 @@ export const RevenueCatProvider = ({
       MMKVStorage.set('trialModalShown', true)
     }
   }
+  const restorePurchase = async () => {
+    try {
+      console.log('Restoring purchases...')
+      const customerInfo = await Purchases.restorePurchases()
+      updateCustomerInfo(customerInfo)
+      toast.custom(<CustomToast message="Purchases restored successfully" />)
+    } catch (error) {
+      console.error('Restore purchases failed:', error)
+      toast.custom(<CustomToast message="Failed to restore purchases" />)
+    }
+  }
 
   const updateTrialStatus = (startDate: Date) => {
     const now = new Date()
@@ -147,7 +160,13 @@ export const RevenueCatProvider = ({
   return (
     <>
       <RevenueCatContext.Provider
-        value={{ isPro, isTrialActive, hasAccess, subscribeNow }}
+        value={{
+          isPro,
+          isTrialActive,
+          hasAccess,
+          subscribeNow,
+          restorePurchase,
+        }}
       >
         {hasAccess ? (
           children

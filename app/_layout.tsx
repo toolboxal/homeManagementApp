@@ -133,8 +133,8 @@ export default function RootLayout() {
               }}
             />
           </Stack>
-          <Toaster richColors position="top-center" />
         </RevenueCatProvider>
+        <Toaster richColors position="top-center" />
       </GestureHandlerRootView>
     </QueryClientProvider>
     // </SQLiteProvider>

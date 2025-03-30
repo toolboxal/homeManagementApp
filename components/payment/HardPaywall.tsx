@@ -12,14 +12,13 @@ type props = {
 const HardPaywall = ({ subscribeNow }: props) => {
   return (
     <SafeAreaView style={styles.page}>
+      <Text style={styles.trialText}>Trial period ended</Text>
       <Text style={styles.title}>{`Start Your \nPro Plan \nNow`}</Text>
       <Text style={styles.slogan}>
         {'From Overwhelmed to Organized \n– At Your Fingertips!'}
       </Text>
       <View>
-        <Text style={styles.textDesc}>
-          Stay on top of replacements—never run out again
-        </Text>
+        <Text style={styles.textDesc}>Stay on top of replacements</Text>
         <Text style={styles.textDesc}>
           Track food expiration dates effortlessly
         </Text>
@@ -56,13 +55,20 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
     padding: 25,
-    paddingTop: 70,
+    paddingTop: 50,
     backgroundColor: primary[300],
+  },
+  trialText: {
+    fontSize: size.md,
+    fontFamily: poppins.Bold,
+    marginBottom: 20,
+    color: primary[400],
+    textAlign: 'center',
   },
   title: {
     fontSize: 50,
     fontFamily: bitter.Bold,
-    marginBottom: 40,
+    marginBottom: 20,
     color: primary[700],
   },
   slogan: {

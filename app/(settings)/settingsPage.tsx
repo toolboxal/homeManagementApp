@@ -14,13 +14,14 @@ import {
   LandPlot,
   DollarSign,
   ChevronRight,
+  RotateCw,
 } from 'lucide-react-native'
 import { useRevenueCat } from '@/providers/RCProvider'
 
 const settingsPage = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isPro, subscribeNow } = useRevenueCat()
+  const { isPro, subscribeNow, restorePurchase } = useRevenueCat()
 
   const handleBackUp = async () => {
     await createBackup()
@@ -82,6 +83,7 @@ const settingsPage = () => {
             console.log('pressed')
             subscribeNow()
           }}
+          disabled={isPro}
         >
           <Text style={styles.optionTxt}>pro plan</Text>
 
@@ -93,6 +95,15 @@ const settingsPage = () => {
               <ChevronRight color={primary[700]} size={20} strokeWidth={2.5} />
             </View>
           )}
+        </Pressable>
+        <Pressable
+          style={styles.optionContainer}
+          onPress={() => {
+            restorePurchase()
+          }}
+        >
+          <Text style={styles.optionTxt}>restore purchase</Text>
+          <RotateCw color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
       </View>
     </View>
