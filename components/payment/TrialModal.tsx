@@ -41,7 +41,6 @@ const TrialModal = ({
             style={styles.btn}
             onPress={() => {
               handleSubscribeNow()
-              toast.custom(<CustomToast message="You have pro access now" />)
             }}
           >
             <Text style={styles.btnText}>{description.btn2}</Text>

@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#7f565d"
+        "backgroundColor": "#F3D8DC"
       },
       "versionCode": 1,
       "package": "com.alvindevapps.perfectSpacesApp"
@@ -44,7 +44,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "cover",
-          "backgroundColor": "#7f565d"
+          "backgroundColor": "#F3D8DC"
         }
       ],
       "expo-sqlite"

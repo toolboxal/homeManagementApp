@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { Platform } from 'react-native'
-import Purchases, { LOG_LEVEL, CustomerInfo } from 'react-native-purchases'
+import Purchases, {
+  LOG_LEVEL,
+  CustomerInfo,
+  PurchasesError,
+} from 'react-native-purchases'
 import { MMKVStorage } from '@/storage/mmkv'
 import HardPaywall from '@/components/payment/HardPaywall'
 import TrialModal from '@/components/payment/TrialModal'
 import WelcomeScreen from '@/components/payment/WelcomeScreen'
+import { toast } from 'sonner-native'
+import CustomToast from '@/components/UI/CustomToast'
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
@@ -15,12 +21,14 @@ interface RevenueCatProps {
   isPro: boolean
   isTrialActive: boolean
   hasAccess: boolean
+  subscribeNow: () => void
 }
 
 const RevenueCatContext = createContext<RevenueCatProps>({
   isPro: false,
   isTrialActive: false,
   hasAccess: false,
+  subscribeNow: () => {},
 })
 
 export const RevenueCatProvider = ({
@@ -108,15 +116,26 @@ export const RevenueCatProvider = ({
   }
 
   const subscribeNow = async () => {
+    console.log('subscribeNow pressed')
     try {
       const offerings = await Purchases.getOfferings()
       if (offerings.current) {
         await Purchases.purchasePackage(offerings.current.availablePackages[0])
+        // Only mark modal as shown and hide it if purchase succeeds
+        MMKVStorage.set('trialModalShown', true)
+        setShowTrialModal(false)
+        toast.custom(<CustomToast message="You have pro access now" />)
       }
-      MMKVStorage.set('trialModalShown', true)
-      setShowTrialModal(false)
     } catch (error) {
-      console.error('Purchase failed:', error)
+      const purchaseError = error as PurchasesError
+      if (purchaseError.underlyingErrorMessage === 'User cancelled') {
+        console.log('User cancelled the purchase')
+        // Do nothing - keep modal open so user can try again or choose trial
+      } else {
+        // console.error('Purchase failed:', purchaseError)
+        toast.custom(<CustomToast message="Purchase cancelled" />)
+        // Optionally show an error message to the user
+      }
     }
   }
 
@@ -127,16 +146,17 @@ export const RevenueCatProvider = ({
 
   return (
     <>
-      <RevenueCatContext.Provider value={{ isPro, isTrialActive, hasAccess }}>
+      <RevenueCatContext.Provider
+        value={{ isPro, isTrialActive, hasAccess, subscribeNow }}
+      >
         {hasAccess ? (
           children
         ) : trialStart ? (
-          <HardPaywall />
+          <HardPaywall subscribeNow={subscribeNow} />
         ) : (
           <WelcomeScreen />
         )}
       </RevenueCatContext.Provider>
-
       <TrialModal
         handleStartTrial={startTrial}
         handleSubscribeNow={subscribeNow}

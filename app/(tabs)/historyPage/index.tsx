@@ -21,6 +21,7 @@ import { format } from 'date-fns'
 import * as ContextMenu from 'zeego/context-menu'
 import { eq, not } from 'drizzle-orm'
 import db from '@/db/db'
+import * as Haptics from 'expo-haptics'
 
 type GroupedItems = Array<[string, TStoreItemSelect[]]>
 
@@ -104,6 +105,11 @@ const HistoryPage = () => {
     queryClient.invalidateQueries({ queryKey: ['store_items'] })
     queryClient.invalidateQueries({ queryKey: ['history'] })
   }
+  const handleDelete = async (id: number) => {
+    await db.delete(storeItems).where(eq(storeItems.id, id))
+    queryClient.invalidateQueries({ queryKey: ['store_items'] })
+    queryClient.invalidateQueries({ queryKey: ['history'] })
+  }
 
   const handleClearHistory = async () => {
     await db.delete(storeItems).where(not(eq(storeItems.status, 'active')))
@@ -112,6 +118,7 @@ const HistoryPage = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     await refetch()
     setRefreshing(false)
   }, [refetch])
@@ -234,6 +241,13 @@ const HistoryPage = () => {
                         ios={{ name: 'arrow.uturn.left.circle' }}
                       />
                       <ContextMenu.ItemTitle>Undo</ContextMenu.ItemTitle>
+                    </ContextMenu.Item>
+                    <ContextMenu.Item
+                      key="delete"
+                      onSelect={() => handleDelete(item.id)}
+                    >
+                      <ContextMenu.ItemIcon ios={{ name: 'delete.left' }} />
+                      <ContextMenu.ItemTitle>Delete</ContextMenu.ItemTitle>
                     </ContextMenu.Item>
                   </ContextMenu.Content>
                 </ContextMenu.Root>

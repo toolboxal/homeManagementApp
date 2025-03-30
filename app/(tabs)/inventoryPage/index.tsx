@@ -19,6 +19,7 @@ import { capitalize } from '@/utils/capitalize'
 import { asc } from 'drizzle-orm'
 import { differenceInDays, formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
+import * as Haptics from 'expo-haptics'
 
 export type TData = TStoreItemSelect & {
   location: {
@@ -77,6 +78,7 @@ const InventoryPage = () => {
 
   const onRefresh = async () => {
     setRefreshing(true)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     await refetch()
     setRefreshing(false)
   }

@@ -2,26 +2,47 @@ import { gray, primary } from '@/constants/colors'
 import { bitter, poppins, size } from '@/constants/fonts'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-const HardPaywall = () => {
+import { toast } from 'sonner-native'
+import CustomToast from '../UI/CustomToast'
+
+type props = {
+  subscribeNow: () => void
+}
+
+const HardPaywall = ({ subscribeNow }: props) => {
   return (
     <SafeAreaView style={styles.page}>
       <Text style={styles.title}>{`Start Your \nPro Plan \nNow`}</Text>
       <Text style={styles.slogan}>
-        {'From Overwhelmed to Organized – \nAt Your Fingertips!'}
+        {'From Overwhelmed to Organized \n– At Your Fingertips!'}
       </Text>
       <View>
-        <Text style={styles.textDesc}>know when to replace your items</Text>
         <Text style={styles.textDesc}>
-          always know when your food is expiring
+          Stay on top of replacements—never run out again
         </Text>
-        <Text style={styles.textDesc}>know where you keep your stuffs</Text>
-        <Text style={styles.textDesc}>make better choices</Text>
+        <Text style={styles.textDesc}>
+          Track food expiration dates effortlessly
+        </Text>
+        <Text style={styles.textDesc}>
+          Always know where everything belongs
+        </Text>
+        <Text style={styles.textDesc}>
+          Make smarter, more organized choices
+        </Text>
       </View>
-      <Text
-        style={styles.ctaText}
-      >{`less than a cup of coffee per month 🤯`}</Text>
+      <View style={styles.ctaContainer}>
+        <Text style={styles.ctaText}>{`annual plan: USD 11`}</Text>
+        <View style={styles.discountContainer}>
+          <Text style={styles.discountText}>40% off</Text>
+        </View>
+      </View>
       <View style={styles.btnContainer}>
-        <Pressable style={styles.btn}>
+        <Pressable
+          style={styles.btn}
+          onPress={() => {
+            subscribeNow()
+          }}
+        >
           <Text style={styles.btnText}>Subscribe now</Text>
         </Pressable>
       </View>
@@ -36,34 +57,49 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 25,
     paddingTop: 70,
-    backgroundColor: primary[700],
+    backgroundColor: primary[300],
   },
   title: {
     fontSize: 50,
     fontFamily: bitter.Bold,
     marginBottom: 40,
-    color: primary[200],
+    color: primary[700],
   },
   slogan: {
     fontSize: size.lg,
-    fontFamily: bitter.Bold,
+    fontFamily: poppins.Bold,
     marginBottom: 25,
-    color: primary[200],
+    color: primary[700],
   },
 
   textDesc: {
     fontFamily: poppins.Regular,
     fontSize: size.md,
-    color: primary[200],
+    color: primary[700],
     marginBottom: 20,
+  },
+  ctaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
   },
   ctaText: {
     fontFamily: poppins.Bold,
     fontSize: size.lg,
-    color: primary[200],
+    color: primary[700],
     marginBottom: 20,
     textAlign: 'center',
     marginTop: 20,
+  },
+  discountContainer: {
+    backgroundColor: primary[500],
+    padding: 7,
+    borderRadius: 8,
+  },
+  discountText: {
+    fontFamily: poppins.Bold,
+    fontSize: size.md,
+    color: primary[200],
   },
   btnContainer: {
     position: 'absolute',
@@ -71,7 +107,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: 50,
-    backgroundColor: primary[950],
+    backgroundColor: primary[200],
     height: 180,
     borderTopLeftRadius: 50,
     borderTopRightRadius: 50,
@@ -81,7 +117,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   btnText: {
-    color: 'white',
+    color: primary[950],
     fontFamily: poppins.Bold,
     fontSize: size.md,
     textAlign: 'center',

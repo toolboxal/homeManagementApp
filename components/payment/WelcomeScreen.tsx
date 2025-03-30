@@ -20,25 +20,26 @@ export default WelcomeScreen
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: primary[700],
+    backgroundColor: primary[200],
     padding: 20,
     alignItems: 'center',
   },
   imageContainer: {
-    width: 200,
+    width: 300,
     height: 200,
     borderRadius: 20,
     overflow: 'hidden',
-    marginTop: 30,
+    // borderWidth: 1,
+    // borderColor: 'black',
   },
   image: {
-    width: 200,
+    width: 300,
     height: 200,
   },
   title: {
     fontFamily: bitter.Regular,
-    fontSize: 45,
-    color: primary[200],
-    marginTop: 60,
+    fontSize: size.xxxl,
+    color: primary[950],
+    marginTop: 80,
   },
 })

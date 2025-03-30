@@ -58,6 +58,7 @@ import {
   Oswald_600SemiBold,
   Oswald_700Bold,
 } from '@expo-google-fonts/oswald'
+import { RevenueCatProvider } from '@/providers/RCProvider'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -104,7 +105,13 @@ export default function RootLayout() {
     }
   }, [dbReady, loaded, error])
 
-  useDrizzleStudio(expoDB)
+  try {
+    console.log('Initializing Drizzle Studio...')
+    useDrizzleStudio(expoDB)
+    console.log('Drizzle Studio initialized successfully')
+  } catch (error) {
+    console.error('Failed to initialize Drizzle Studio:', error)
+  }
 
   if (!dbReady || (!loaded && !error)) {
     return null
@@ -114,18 +121,20 @@ export default function RootLayout() {
     // <SQLiteProvider databaseName="app.db">
     <QueryClientProvider client={queryClient}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="(settings)"
-            options={{
-              presentation: 'modal',
-              animation: 'slide_from_bottom',
-              animationDuration: 50,
-            }}
-          />
-        </Stack>
-        <Toaster richColors position="top-center" />
+        <RevenueCatProvider>
+          <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen
+              name="(settings)"
+              options={{
+                presentation: 'modal',
+                animation: 'slide_from_bottom',
+                animationDuration: 50,
+              }}
+            />
+          </Stack>
+          <Toaster richColors position="top-center" />
+        </RevenueCatProvider>
       </GestureHandlerRootView>
     </QueryClientProvider>
     // </SQLiteProvider>

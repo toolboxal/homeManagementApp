@@ -13,11 +13,14 @@ import {
   HardDriveDownload,
   LandPlot,
   DollarSign,
+  ChevronRight,
 } from 'lucide-react-native'
+import { useRevenueCat } from '@/providers/RCProvider'
 
 const settingsPage = () => {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const { isPro, subscribeNow } = useRevenueCat()
 
   const handleBackUp = async () => {
     await createBackup()
@@ -72,6 +75,24 @@ const settingsPage = () => {
         >
           <Text style={styles.optionTxt}>change currency</Text>
           <DollarSign color={primary[700]} size={20} strokeWidth={2.5} />
+        </Pressable>
+        <Pressable
+          style={styles.optionContainer}
+          onPress={() => {
+            console.log('pressed')
+            subscribeNow()
+          }}
+        >
+          <Text style={styles.optionTxt}>pro plan</Text>
+
+          {isPro ? (
+            <Text style={styles.optionTxt}>active</Text>
+          ) : (
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              <Text style={styles.optionTxt}>not active</Text>
+              <ChevronRight color={primary[700]} size={20} strokeWidth={2.5} />
+            </View>
+          )}
         </Pressable>
       </View>
     </View>

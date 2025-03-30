@@ -43,6 +43,7 @@ import { TData } from './inventoryPage'
 import { useRouter } from 'expo-router'
 import { formatCurrency } from 'react-native-format-currency'
 import { MMKVStorage } from '@/storage/mmkv'
+import * as Haptics from 'expo-haptics'
 
 const IndexPage = () => {
   const router = useRouter()
@@ -129,6 +130,7 @@ const IndexPage = () => {
 
   const onRefresh = async () => {
     setRefreshing(true)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     try {
       // Refetch all the queries
       await Promise.all([
