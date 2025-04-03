@@ -20,6 +20,8 @@ import { asc } from 'drizzle-orm'
 import { differenceInDays, formatDistance } from 'date-fns'
 import ItemModal from '@/components/inventory/ItemModal'
 import * as Haptics from 'expo-haptics'
+import * as DropdownMenu from 'zeego/dropdown-menu'
+import { ArrowBigDown, ArrowDown, ChevronDown } from 'lucide-react-native'
 
 export type TData = TStoreItemSelect & {
   location: {
@@ -46,6 +48,14 @@ const amountAlertColors = {
   full: green[300],
 }
 
+const categoryArray: Array<TData['category'] | 'all'> = [
+  'all',
+  'food',
+  'hygiene',
+  'supplies',
+  'miscellaneous',
+]
+
 const InventoryPage = () => {
   const [selectedRoomId, setSelectedRoomId] = useState<number>(99999)
   const [groupedByLocation, setGroupedByLocation] = useState<GroupedItems>([])
@@ -53,6 +63,7 @@ const InventoryPage = () => {
   const [selectedItem, setSelectedItem] = useState<TData | null>(null)
   const [searchBarQuery, setSearchBarQuery] = useState<string>('')
   const [refreshing, setRefreshing] = useState(false)
+  const [filter, setFilter] = useState('all')
 
   const { data: roomList } = useQuery({
     queryKey: ['location', 'rooms'],
@@ -89,8 +100,12 @@ const InventoryPage = () => {
       setGroupedByLocation([])
       return
     }
+    const filteredItems = storeItemsList.filter((item) => {
+      if (filter === 'all') return true
+      return item.category === filter
+    })
 
-    const searchedItem = storeItemsList.filter((item) => {
+    const searchedItem = filteredItems.filter((item) => {
       return item.name.toLowerCase().includes(searchBarQuery.toLowerCase())
     })
     // console.log(searchedItem)
@@ -123,7 +138,7 @@ const InventoryPage = () => {
     })
 
     setGroupedByLocation(groupedArray)
-  }, [storeItemsList, searchBarQuery])
+  }, [storeItemsList, searchBarQuery, filter])
 
   const completedRoomList = useMemo(
     () => [{ id: 99999, room: 'all_rooms' }, ...(roomList || [])],
@@ -163,6 +178,7 @@ const InventoryPage = () => {
     >
       <Stack.Screen
         options={{
+          headerLargeTitle: false,
           headerSearchBarOptions: {
             tintColor: primary[500],
             textColor: primary[700],
@@ -185,7 +201,55 @@ const InventoryPage = () => {
         setSelectedRoomId={setSelectedRoomId}
         roomList={completedRoomList || []}
       />
-
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: 5,
+              paddingHorizontal: 8,
+              paddingVertical: 3,
+              // borderWidth: StyleSheet.hairlineWidth,
+              // borderColor: primary[500],
+              marginTop: 8,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: poppins.Regular,
+                fontSize: size.sm,
+                color: primary[400],
+              }}
+            >
+              Category
+            </Text>
+            <View style={{ flexDirection: 'row', gap: 3 }}>
+              <Text
+                style={{
+                  fontFamily: poppins.Regular,
+                  fontSize: size.sm,
+                  color: primary[400],
+                }}
+              >
+                {filter}
+              </Text>
+              <ChevronDown size={20} color={primary[400]} strokeWidth={3} />
+            </View>
+          </View>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          {categoryArray.map((item) => (
+            <DropdownMenu.Item
+              key={item || ''}
+              onSelect={() => setFilter(item || 'all')}
+            >
+              <DropdownMenu.ItemTitle>{item || ''}</DropdownMenu.ItemTitle>
+            </DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
       {groupedByLocation.length > 0 ? (
         <View style={styles.groupContainer}>
           {groupedByLocation.map(([locationName, items]) => (

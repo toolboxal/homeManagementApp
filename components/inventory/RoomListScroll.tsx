@@ -54,7 +54,8 @@ const RoomListScroll = ({
 export default RoomListScroll
 const styles = StyleSheet.create({
   roomListContainer: {
-    padding: 5,
+    paddingHorizontal: 5,
+    // backgroundColor: 'green',
   },
   roomChip: {
     borderRadius: 8,
