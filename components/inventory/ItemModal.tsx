@@ -27,6 +27,7 @@ import Fontisto from '@expo/vector-icons/Fontisto'
 import { format } from 'date-fns'
 import * as Haptics from 'expo-haptics'
 import { Cookie, Trash2 } from 'lucide-react-native'
+import { MMKVStorage } from '@/storage/mmkv'
 
 type Props = {
   openItemModal: boolean
@@ -57,6 +58,8 @@ const ItemModal = ({
       ? 2
       : 1
   }
+
+  const currency = MMKVStorage.getString('user.currency')
 
   const [sliderValue, setSliderValue] = useState(
     getSliderValueFromAmount(selectedItem?.amount)
@@ -198,20 +201,35 @@ const ItemModal = ({
       return (
         <View style={{ flex: 1 }}>
           <View style={styles.topBar}>
-            <Text style={styles.itemName}>{selectedItem?.name}</Text>
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.itemName}>{selectedItem?.name}</Text>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
+              >
+                <View
+                  style={{
+                    padding: 4,
+                    backgroundColor: primary[600],
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text style={[styles.topBarText, { color: 'white' }]}>
+                    {selectedItem?.category === 'miscellaneous'
+                      ? 'misc'
+                      : selectedItem?.category}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 3 }}>
+                  <Text style={styles.topBarText}>{currency}</Text>
+                  <Text style={styles.topBarText}>{selectedItem?.cost}</Text>
+                </View>
+              </View>
+            </View>
             <Pressable
               style={{ flexDirection: 'row', alignItems: 'center' }}
               onPress={() => setCurrentPage(1)}
             >
-              <Text
-                style={{
-                  fontFamily: poppins.Regular,
-                  fontSize: size.xs,
-                  color: gray[900],
-                }}
-              >
-                storage location
-              </Text>
+              <Text style={styles.topBarText}>change location</Text>
               <MaterialIcons name="chevron-right" size={24} color={gray[900]} />
             </Pressable>
           </View>
@@ -288,15 +306,7 @@ const ItemModal = ({
               onPress={() => setCurrentPage(0)}
             >
               <MaterialIcons name="chevron-left" size={24} color={gray[900]} />
-              <Text
-                style={{
-                  fontFamily: poppins.Regular,
-                  fontSize: size.xs,
-                  color: gray[900],
-                }}
-              >
-                back
-              </Text>
+              <Text style={styles.topBarText}>back</Text>
             </Pressable>
             <Text
               style={[
@@ -399,18 +409,23 @@ const styles = StyleSheet.create({
     width: '92%',
     backgroundColor: gray[50],
     borderRadius: 25,
-    padding: 20,
+    padding: 18,
     paddingBottom: 5,
     marginHorizontal: 'auto',
     marginBottom: 50,
   },
   topBar: {
-    paddingBottom: 15,
+    paddingBottom: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     borderBottomColor: gray[300],
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  topBarText: {
+    fontFamily: poppins.Medium,
+    fontSize: size.xs,
+    color: gray[900],
   },
   itemName: {
     fontFamily: poppins.Bold,

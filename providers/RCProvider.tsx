@@ -88,7 +88,7 @@ export const RevenueCatProvider = ({
       if (trialStart) {
         updateTrialStatus(new Date(trialStart))
       }
-    }, 1000) // Check every 1 second
+    }, 1000 * 60 * 60) // Check every 1 hour
     // Cleanup timer on unmount
     return () => clearInterval(timer)
   }, [])
@@ -116,8 +116,8 @@ export const RevenueCatProvider = ({
   const updateTrialStatus = (startDate: Date) => {
     const now = new Date()
     const diffTime = now.getTime() - startDate.getTime()
-    const diffDays = Math.floor(diffTime / (1000 * 60))
-    setIsTrialActive(diffDays < 5)
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+    setIsTrialActive(diffDays < 7)
   }
 
   const startTrial = () => {
