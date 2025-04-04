@@ -10,7 +10,7 @@
     "newArchEnabled": true,
     "owner": "alvindevapps",
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.alvindevapps.perfectSpacesApp",
       "buildNumber": "3",
       "infoPlist": {
@@ -20,7 +20,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#F3D8DC"
+        "backgroundColor": "#e9b8c0"
       },
       "versionCode": 1,
       "package": "com.alvindevapps.perfectSpacesApp"
@@ -44,7 +44,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "cover",
-          "backgroundColor": "#F3D8DC"
+          "backgroundColor": "#e9b8c0"
         }
       ],
       "expo-sqlite"

@@ -15,13 +15,23 @@ import {
   DollarSign,
   ChevronRight,
   RotateCw,
+  Clock,
 } from 'lucide-react-native'
 import { useRevenueCat } from '@/providers/RCProvider'
+import { useEffect, useState } from 'react'
 
 const settingsPage = () => {
+  const [timer, setTimer] = useState(0)
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isPro, subscribeNow, restorePurchase } = useRevenueCat()
+  const { isPro, isTrialActive, subscribeNow, restorePurchase, trialTimeLeft } =
+    useRevenueCat()
+
+  const totalSeconds = Math.floor(trialTimeLeft / 1000) // Convert to seconds
+  const diffDays = Math.floor(totalSeconds / (60 * 60 * 24))
+  const remainingHours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60))
+  const remainingMinutes = Math.floor((totalSeconds % (60 * 60)) / 60)
+  const remainingSeconds = totalSeconds % 60
 
   const handleBackUp = async () => {
     await createBackup()
@@ -42,6 +52,7 @@ const settingsPage = () => {
       router.dismiss()
     }
   }
+
   return (
     <View style={styles.page}>
       <View style={styles.topBar}>
@@ -105,11 +116,39 @@ const settingsPage = () => {
           <Text style={styles.optionTxt}>restore purchase</Text>
           <RotateCw color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
+
+        {isTrialActive && trialTimeLeft && (
+          <View style={styles.trialContainer}>
+            <View style={styles.trialHeader}>
+              <Clock color={primary[700]} size={18} strokeWidth={2} />
+              <Text style={styles.trialHeaderText}>Trial Time Remaining</Text>
+            </View>
+            <View style={styles.trialTimerBox}>
+              <View style={styles.timeUnit}>
+                <Text style={styles.timeValue}>{diffDays}</Text>
+                <Text style={styles.timeLabel}>days</Text>
+              </View>
+              <View style={styles.timeUnit}>
+                <Text style={styles.timeValue}>{remainingHours}</Text>
+                <Text style={styles.timeLabel}>hours</Text>
+              </View>
+              <View style={styles.timeUnit}>
+                <Text style={styles.timeValue}>{remainingMinutes}</Text>
+                <Text style={styles.timeLabel}>min</Text>
+              </View>
+              <View style={styles.timeUnit}>
+                <Text style={styles.timeValue}>{remainingSeconds}</Text>
+                <Text style={styles.timeLabel}>sec</Text>
+              </View>
+            </View>
+          </View>
+        )}
       </View>
     </View>
   )
 }
 export default settingsPage
+
 const styles = StyleSheet.create({
   page: {
     flex: 1,
@@ -147,5 +186,40 @@ const styles = StyleSheet.create({
     fontFamily: poppins.Regular,
     fontSize: size.sm,
     color: primary[700],
+  },
+  trialContainer: {
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    marginBottom: 5,
+  },
+  trialHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 10,
+  },
+  trialHeaderText: {
+    fontFamily: poppins.Medium,
+    fontSize: size.sm,
+    color: primary[700],
+  },
+  trialTimerBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 5,
+  },
+  timeUnit: {
+    alignItems: 'center',
+  },
+  timeValue: {
+    fontFamily: poppins.SemiBold,
+    fontSize: size.xl,
+    color: primary[800],
+  },
+  timeLabel: {
+    fontFamily: poppins.Regular,
+    fontSize: size.xs,
+    color: primary[500],
   },
 })

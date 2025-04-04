@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   modalBox: {
-    minHeight: '38%',
+    minHeight: '40%',
     width: '92%',
     backgroundColor: gray[50],
     borderRadius: 25,
