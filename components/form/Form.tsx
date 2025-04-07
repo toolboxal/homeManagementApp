@@ -44,7 +44,6 @@ import CustomToast from '../UI/CustomToast'
 import { toast } from 'sonner-native'
 import { useNavigation } from 'expo-router'
 import { MMKVStorage } from '@/storage/mmkv'
-import AnnoucementModal from '../payment/TrialModal'
 import { useRevenueCat } from '@/providers/RCProvider'
 import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui'
 
