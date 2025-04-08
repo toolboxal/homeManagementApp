@@ -82,17 +82,39 @@ export const RevenueCatProvider = ({
   }
 
   async function handlePurchase(packageId: PurchasesPackage) {
-    toast.custom(<CustomToast message="Processing...." />)
+    toast.custom(<CustomToast message="Processing purchase..." />)
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     try {
       const { customerInfo } = await Purchases.purchasePackage(packageId)
+
       if (typeof customerInfo.entitlements.active['pro_plan'] !== 'undefined') {
-        // Unlock that great "pro" content
-        toast.custom(<CustomToast message="You have pro access now" />)
+        // Provide stronger haptic feedback for successful purchase
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+
+        // Update UI state
+        updateCustomerInfo(customerInfo)
+
+        // Show success toast
+        toast.custom(
+          <CustomToast message="Purchase successful! You now have pro access." />
+        )
+
+        // Force a small delay to ensure UI updates are visible
+        setTimeout(() => {
+          setIsPro(true)
+        }, 500)
+      } else {
+        // Purchase completed but entitlement not found
+        toast.custom(
+          <CustomToast message="Purchase completed, but subscription not activated. Please contact support." />
+        )
       }
     } catch (e: any) {
       if (!e.userCancelled) {
         showError(e)
+      } else {
+        // User cancelled the purchase
+        toast.custom(<CustomToast message="Purchase cancelled" />)
       }
     }
   }
