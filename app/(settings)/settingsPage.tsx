@@ -15,30 +15,23 @@ import {
   DollarSign,
   ChevronRight,
   RotateCw,
-  Clock,
 } from 'lucide-react-native'
 import { useRevenueCat } from '@/providers/RCProvider'
-import { useEffect, useState } from 'react'
+import * as Haptics from 'expo-haptics'
 
 const settingsPage = () => {
-  const [timer, setTimer] = useState(0)
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isPro, isTrialActive, subscribeNow, restorePurchase, trialTimeLeft } =
-    useRevenueCat()
-
-  const totalSeconds = Math.floor(trialTimeLeft / 1000) // Convert to seconds
-  const diffDays = Math.floor(totalSeconds / (60 * 60 * 24))
-  const remainingHours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60))
-  const remainingMinutes = Math.floor((totalSeconds % (60 * 60)) / 60)
-  const remainingSeconds = totalSeconds % 60
+  const { isPro, restorePurchase } = useRevenueCat()
 
   const handleBackUp = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     await createBackup()
     router.dismiss()
   }
 
   const handleRestore = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
     const result = await restoreFromBackup()
     if (result === 'success') {
       queryClient.invalidateQueries({ queryKey: ['store_items'] })
@@ -73,6 +66,7 @@ const settingsPage = () => {
         <Pressable
           style={styles.optionContainer}
           onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
             router.navigate('/(settings)/chipsPage')
           }}
         >
@@ -82,20 +76,14 @@ const settingsPage = () => {
         <Pressable
           style={styles.optionContainer}
           onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
             router.navigate('/(settings)/currencyPage')
           }}
         >
           <Text style={styles.optionTxt}>change currency</Text>
           <DollarSign color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
-        <Pressable
-          style={styles.optionContainer}
-          onPress={() => {
-            console.log('pressed')
-            subscribeNow()
-          }}
-          disabled={isPro}
-        >
+        <Pressable style={styles.optionContainer} disabled={isPro}>
           <Text style={styles.optionTxt}>pro plan</Text>
 
           {isPro ? (
@@ -116,33 +104,6 @@ const settingsPage = () => {
           <Text style={styles.optionTxt}>restore purchase</Text>
           <RotateCw color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
-
-        {isTrialActive && trialTimeLeft && (
-          <View style={styles.trialContainer}>
-            <View style={styles.trialHeader}>
-              <Clock color={primary[700]} size={18} strokeWidth={2} />
-              <Text style={styles.trialHeaderText}>Trial Time Remaining</Text>
-            </View>
-            <View style={styles.trialTimerBox}>
-              <View style={styles.timeUnit}>
-                <Text style={styles.timeValue}>{diffDays}</Text>
-                <Text style={styles.timeLabel}>days</Text>
-              </View>
-              <View style={styles.timeUnit}>
-                <Text style={styles.timeValue}>{remainingHours}</Text>
-                <Text style={styles.timeLabel}>hours</Text>
-              </View>
-              <View style={styles.timeUnit}>
-                <Text style={styles.timeValue}>{remainingMinutes}</Text>
-                <Text style={styles.timeLabel}>min</Text>
-              </View>
-              <View style={styles.timeUnit}>
-                <Text style={styles.timeValue}>{remainingSeconds}</Text>
-                <Text style={styles.timeLabel}>sec</Text>
-              </View>
-            </View>
-          </View>
-        )}
       </View>
     </View>
   )

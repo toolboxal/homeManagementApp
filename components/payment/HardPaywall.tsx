@@ -1,5 +1,5 @@
 import { gray, green, primary } from '@/constants/colors'
-import { bitter, poppins, size } from '@/constants/fonts'
+import { poppins, size } from '@/constants/fonts'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { toast } from 'sonner-native'
 import CustomToast from '../UI/CustomToast'
@@ -104,7 +104,7 @@ const HardPaywall = ({ handlePurchase }: props) => {
               style={styles.btnText}
             >{`Free trial, then ${currency} ${yearlyPricePerMonth}/month`}</Text>
           </View>
-          <View style={{ flexDirection: 'column', gap: 5 }}>
+          <View style={{ flexDirection: 'column', gap: 3 }}>
             <Text style={[styles.btnHeader, { textAlign: 'right' }]}>
               {currency} {yearlyPrice}
             </Text>

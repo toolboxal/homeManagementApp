@@ -101,7 +101,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (dbReady && (loaded || error)) {
-      SplashScreen.hideAsync()
+      setTimeout(() => {
+        SplashScreen.hideAsync()
+      }, 2000)
     }
   }, [dbReady, loaded, error])
 

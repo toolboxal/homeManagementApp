@@ -2,10 +2,7 @@ import { gray, primary } from '@/constants/colors'
 import { MoveLeft, X } from 'lucide-react-native'
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native'
-import {
-  formatCurrency,
-  getSupportedCurrencies,
-} from 'react-native-format-currency'
+import { getSupportedCurrencies } from 'react-native-format-currency'
 import { useRouter } from 'expo-router'
 import Entypo from '@expo/vector-icons/Entypo'
 import { bitter, poppins, size } from '@/constants/fonts'
@@ -67,23 +64,6 @@ const currencyPage = () => {
                   {currency.name}
                 </Text>
               </View>
-              <Pressable
-                // onPress={() => mutation.mutate({ type: 'room', id: room.id })}
-                pressRetentionOffset={{
-                  bottom: 10,
-                  left: 10,
-                  right: 10,
-                  top: 10,
-                }}
-              >
-                <X
-                  color={
-                    currency.code === selectedCur ? primary[50] : gray[300]
-                  }
-                  strokeWidth={1.5}
-                  size={18}
-                />
-              </Pressable>
             </Pressable>
           )
         })}
