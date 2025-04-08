@@ -9,6 +9,7 @@ import HardPaywall from '@/components/payment/HardPaywall'
 import { toast } from 'sonner-native'
 import CustomToast from '@/components/UI/CustomToast'
 import * as Haptics from 'expo-haptics'
+import RevenueCatUI, { PAYWALL_RESULT } from 'react-native-purchases-ui'
 
 const APIKeys = {
   apple: process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY as string,
@@ -18,11 +19,19 @@ const APIKeys = {
 interface RevenueCatProps {
   isPro: boolean
   restorePurchase: () => Promise<void>
+  presentSubscriptionUpgrade: () => Promise<void>
+  currentSubscriptionType: string | null
+  openManageSubscriptions: () => Promise<void>
+  handlePurchase: (packageId: PurchasesPackage) => void
 }
 
 const RevenueCatContext = createContext<RevenueCatProps>({
   isPro: false,
   restorePurchase: async () => {},
+  presentSubscriptionUpgrade: async () => {},
+  currentSubscriptionType: null,
+  openManageSubscriptions: async () => {},
+  handlePurchase: async () => {},
 })
 
 export const RevenueCatProvider = ({
@@ -32,6 +41,9 @@ export const RevenueCatProvider = ({
 }) => {
   const [isPro, setIsPro] = useState(false)
   const [isReady, setIsReady] = useState(false)
+  const [currentSubscriptionType, setCurrentSubscriptionType] = useState<
+    string | null
+  >(null)
 
   useEffect(() => {
     const initialize = async () => {
@@ -61,6 +73,8 @@ export const RevenueCatProvider = ({
   const updateCustomerInfo = (customerInfo: CustomerInfo) => {
     const proActive = customerInfo.entitlements.active['pro_plan'] !== undefined
     setIsPro(proActive)
+    console.log('subscription type:', customerInfo.activeSubscriptions)
+    return proActive
   }
 
   const restorePurchase = async () => {
@@ -68,8 +82,12 @@ export const RevenueCatProvider = ({
     try {
       console.log('Restoring purchases...')
       const customerInfo = await Purchases.restorePurchases()
-      updateCustomerInfo(customerInfo)
-      toast.custom(<CustomToast message="Purchases restored successfully" />)
+      const proActive = updateCustomerInfo(customerInfo)
+      if (proActive) {
+        toast.custom(<CustomToast message="Purchases restored successfully" />)
+      } else {
+        toast.custom(<CustomToast message="Failed to restore purchases" />)
+      }
     } catch (error) {
       console.error('Restore purchases failed:', error)
       toast.custom(<CustomToast message="Failed to restore purchases" />)
@@ -119,6 +137,90 @@ export const RevenueCatProvider = ({
     }
   }
 
+  const presentSubscriptionUpgrade = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+
+    try {
+      // Get all offerings first
+      const offeringsData = await Purchases.getOfferings()
+
+      if (!offeringsData || !offeringsData.all) {
+        toast.custom(
+          <CustomToast message="Failed to load subscription options" />
+        )
+        return
+      }
+
+      // Determine which offering to display based on current subscription
+      let offeringToUse = offeringsData.current
+
+      // For users with 3-month subscription, show them yearly and lifetime options
+      if (
+        currentSubscriptionType === '3 months' &&
+        offeringsData.all['upgrade_options']
+      ) {
+        offeringToUse = offeringsData.all['upgrade_options']
+      }
+      // For users with yearly subscription, show them only lifetime option
+      else if (
+        currentSubscriptionType === 'yearly_plan' &&
+        offeringsData.all['lifetime_only']
+      ) {
+        offeringToUse = offeringsData.all['lifetime_only']
+      }
+      // For lifetime users, there's no upgrade path
+      else if (currentSubscriptionType === 'lifetime') {
+        toast.custom(
+          <CustomToast message="You already have a lifetime subscription!" />
+        )
+        return
+      }
+
+      if (!offeringToUse) {
+        // Fallback to current offering if the specific one isn't found
+        offeringToUse = offeringsData.current
+
+        if (!offeringToUse) {
+          toast.custom(
+            <CustomToast message="No subscription options available" />
+          )
+          return
+        }
+      }
+
+      const result = await RevenueCatUI.presentPaywall({
+        offering: offeringToUse,
+      })
+
+      if (result === PAYWALL_RESULT.PURCHASED) {
+        // Refresh customer info after purchase
+        const customerInfo = await Purchases.getCustomerInfo()
+        updateCustomerInfo(customerInfo)
+        toast.custom(
+          <CustomToast message="Subscription upgraded successfully!" />
+        )
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      }
+    } catch (error) {
+      console.error('Error presenting paywall:', error)
+      toast.custom(
+        <CustomToast message="Failed to load subscription options" />
+      )
+    }
+  }
+
+  const openManageSubscriptions = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      await Purchases.showManageSubscriptions()
+    } catch (error) {
+      console.error('Failed to open subscription management', error)
+      toast.custom(
+        <CustomToast message="Failed to open subscription settings" />
+      )
+    }
+  }
+
   if (!isReady) return null
 
   return (
@@ -127,6 +229,10 @@ export const RevenueCatProvider = ({
         value={{
           isPro,
           restorePurchase,
+          presentSubscriptionUpgrade,
+          currentSubscriptionType,
+          openManageSubscriptions,
+          handlePurchase,
         }}
       >
         {isPro ? children : <HardPaywall handlePurchase={handlePurchase} />}

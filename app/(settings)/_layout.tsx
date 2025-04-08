@@ -22,6 +22,12 @@ const SettingsLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="upgradePage"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   )
 }

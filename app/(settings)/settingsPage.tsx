@@ -18,11 +18,18 @@ import {
 } from 'lucide-react-native'
 import { useRevenueCat } from '@/providers/RCProvider'
 import * as Haptics from 'expo-haptics'
+import { useState } from 'react'
 
 const settingsPage = () => {
+  const [openUpgradeModal, setOpenUpgradeModal] = useState(false)
   const router = useRouter()
   const queryClient = useQueryClient()
-  const { isPro, restorePurchase } = useRevenueCat()
+  const {
+    isPro,
+    restorePurchase,
+    presentSubscriptionUpgrade,
+    currentSubscriptionType,
+  } = useRevenueCat()
 
   const handleBackUp = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
@@ -83,17 +90,19 @@ const settingsPage = () => {
           <Text style={styles.optionTxt}>change currency</Text>
           <DollarSign color={primary[700]} size={20} strokeWidth={2.5} />
         </Pressable>
-        <Pressable style={styles.optionContainer} disabled={isPro}>
+        <Pressable
+          style={styles.optionContainer}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+            router.navigate('/(settings)/upgradePage')
+          }}
+        >
           <Text style={styles.optionTxt}>pro plan</Text>
-
-          {isPro ? (
-            <Text style={styles.optionTxt}>active</Text>
-          ) : (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-              <Text style={styles.optionTxt}>not active</Text>
               <ChevronRight color={primary[700]} size={20} strokeWidth={2.5} />
             </View>
-          )}
+          </View>
         </Pressable>
         <Pressable
           style={styles.optionContainer}

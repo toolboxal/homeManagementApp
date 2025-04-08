@@ -1,24 +1,21 @@
-import { gray, green, primary } from '@/constants/colors'
-import { poppins, size } from '@/constants/fonts'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
-import { toast } from 'sonner-native'
-import CustomToast from '../UI/CustomToast'
+import { useRouter } from 'expo-router'
+import { gray, green, primary } from '@/constants/colors'
+import { MoveLeft } from 'lucide-react-native'
+import { useEffect, useState } from 'react'
 import Purchases, {
   PurchasesOfferings,
   PurchasesPackage,
 } from 'react-native-purchases'
-import { useEffect, useState } from 'react'
+import { poppins, size } from '@/constants/fonts'
 import { useRevenueCat } from '@/providers/RCProvider'
 
-type props = {
-  handlePurchase: (packageId: PurchasesPackage) => void
-}
-
-const HardPaywall = ({ handlePurchase }: props) => {
+const upgradePage = () => {
   const [offerings, setOfferings] = useState<PurchasesOfferings | null>(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
-  const { restorePurchase } = useRevenueCat()
+  const { restorePurchase, handlePurchase } = useRevenueCat()
 
   useEffect(() => {
     const fetchOfferings = async () => {
@@ -28,12 +25,10 @@ const HardPaywall = ({ handlePurchase }: props) => {
         setOfferings(offeringsData)
       } catch (e) {
         console.error('Error fetching offerings:', e)
-        toast.error('Failed to load subscription options')
       } finally {
         setLoading(false)
       }
     }
-
     fetchOfferings()
   }, [])
 
@@ -63,16 +58,25 @@ const HardPaywall = ({ handlePurchase }: props) => {
 
   return (
     <View style={styles.page}>
-      <View style={{ marginBottom: 40 }}>
-        <Text style={styles.logoText}>perfect</Text>
-        <Text style={styles.logoText}>spaces</Text>
+      <View style={styles.topBar}>
+        <Pressable onPress={() => router.back()}>
+          <MoveLeft color={primary[700]} size={25} />
+        </Pressable>
       </View>
-      <Text style={styles.title}>Organize Your Home Effortlessly</Text>
-      <View>
-        <Text style={styles.textDesc}>reduce food wastage</Text>
-        <Text style={styles.textDesc}>organize your perfect pantry</Text>
-        <Text style={styles.textDesc}>always know where things are kept</Text>
-        <Text style={styles.textDesc}>cancel anytime</Text>
+      <View style={{ padding: 20 }}>
+        <View style={{ marginBottom: 30 }}>
+          <Text style={styles.logoText}>perfect</Text>
+          <Text style={styles.logoText}>spaces</Text>
+        </View>
+        <Text style={styles.title}>Thinking of upgrading?</Text>
+        <View>
+          <Text style={styles.textDesc}>own the spaces in your home</Text>
+          <Text style={styles.textDesc}>
+            for less than a cup of coffee per month
+          </Text>
+          <Text style={styles.textDesc}>or keep this app forever</Text>
+          <Text style={styles.textDesc}>cancel anytime</Text>
+        </View>
       </View>
       <View style={styles.btnContainer}>
         <Pressable
@@ -139,71 +143,22 @@ const HardPaywall = ({ handlePurchase }: props) => {
             </Text>
           </View>
         </Pressable>
-        <Pressable
-          style={{
-            // backgroundColor: 'green',
-            marginHorizontal: 'auto',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: 5,
-            marginTop: 5,
-          }}
-          onPress={restorePurchase}
-        >
-          <Text style={[styles.textDesc, { marginTop: 0 }]}>
-            Restore purchase
-          </Text>
-        </Pressable>
       </View>
     </View>
   )
 }
-
-export default HardPaywall
-
+export default upgradePage
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    padding: 25,
-    paddingTop: 80,
     backgroundColor: primary[300],
   },
-  logoText: {
-    color: 'white',
-    fontFamily: poppins.Bold,
-    textAlign: 'right',
-    fontSize: size.xxl,
-  },
-  trialText: {
-    fontSize: size.md,
-    fontFamily: poppins.Bold,
-    marginBottom: 20,
-    color: primary[400],
-    textAlign: 'center',
-  },
-  title: {
-    fontSize: size.xxxl,
-    fontFamily: poppins.Bold,
-    marginBottom: 15,
-    color: primary[500],
-    lineHeight: 45,
-  },
-  textDesc: {
-    fontFamily: poppins.Bold,
-    fontSize: size.md,
-    color: primary[500],
-    marginTop: 20,
-  },
-  discountContainer: {
-    backgroundColor: primary[500],
-    padding: 7,
-    borderRadius: 8,
-  },
-  discountText: {
-    fontFamily: poppins.Bold,
-    fontSize: size.md,
-    color: primary[200],
+  topBar: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: primary[100],
   },
   btnContainer: {
     position: 'absolute',
@@ -236,5 +191,24 @@ const styles = StyleSheet.create({
     color: primary[950],
     fontFamily: poppins.Regular,
     fontSize: size.xs,
+  },
+  textDesc: {
+    fontFamily: poppins.Bold,
+    fontSize: size.md,
+    color: primary[500],
+    marginTop: 10,
+  },
+  title: {
+    fontSize: size.xxxl,
+    fontFamily: poppins.Bold,
+    marginBottom: 15,
+    color: primary[500],
+    lineHeight: 45,
+  },
+  logoText: {
+    color: 'white',
+    fontFamily: poppins.Bold,
+    textAlign: 'right',
+    fontSize: size.xxl,
   },
 })

@@ -155,7 +155,7 @@ const AddLocModal = ({
       if (existingItems.length > 0) {
         setError(fieldName, {
           type: 'duplicate',
-          message: `This ${value} already exists`,
+          message: `${value} already exists`,
         })
         return
       }
