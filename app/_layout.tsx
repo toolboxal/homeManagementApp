@@ -59,6 +59,7 @@ import {
   Oswald_700Bold,
 } from '@expo-google-fonts/oswald'
 import { RevenueCatProvider } from '@/providers/RCProvider'
+import { TextInput } from 'react-native'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -92,6 +93,13 @@ export default function RootLayout() {
         await migrate(db, migrations)
         await seedDatabase()
         setDbReady(true)
+
+        if ((Text as any).defaultProps == null) (Text as any).defaultProps = {}
+        ;(Text as any).defaultProps.allowFontScaling = false
+
+        if ((TextInput as any).defaultProps == null)
+          (TextInput as any).defaultProps = {}
+        ;(TextInput as any).defaultProps.allowFontScaling = false
       } catch (err) {
         console.error('Database setup failed:', err)
       }

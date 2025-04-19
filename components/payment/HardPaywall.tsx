@@ -1,6 +1,6 @@
 import { gray, green, primary } from '@/constants/colors'
 import { poppins, size } from '@/constants/fonts'
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View, Linking } from 'react-native'
 import { toast } from 'sonner-native'
 import CustomToast from '../UI/CustomToast'
 import Purchases, {
@@ -155,6 +155,27 @@ const HardPaywall = ({ handlePurchase }: props) => {
             Restore purchase
           </Text>
         </Pressable>
+        <View style={styles.footerContainer}>
+          <Pressable
+            onPress={() =>
+              Linking.openURL(
+                'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
+              )
+            }
+          >
+            <Text style={styles.footerLink}>Terms of Service</Text>
+          </Pressable>
+          <Text style={styles.footerSeparator}>|</Text>
+          <Pressable
+            onPress={() =>
+              Linking.openURL(
+                'https://www.privacypolicies.com/live/1f4f1d3e-83d3-4c96-88f2-c44f87dc3807'
+              )
+            }
+          >
+            <Text style={styles.footerLink}>Privacy Policy</Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   )
@@ -236,5 +257,21 @@ const styles = StyleSheet.create({
     color: primary[950],
     fontFamily: poppins.Regular,
     fontSize: size.xs,
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  footerLink: {
+    color: primary[600],
+    fontFamily: poppins.Medium,
+    fontSize: size.sm,
+    textDecorationLine: 'none',
+  },
+  footerSeparator: {
+    color: '#8E8E93',
+    fontSize: 14,
+    marginHorizontal: 10,
   },
 })
